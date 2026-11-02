@@ -1,25 +1,26 @@
+{{-- Textes de la fiche : content/offers.yml (offres et intitulés de la rubrique « page »). --}}
 @layouts.app({
   title: offer.title,
   description: (offer.summary + ' ' + offer.problem).slice(0, 240),
   path: '/solutions/' + offer.slug
 })
-  @pageHead({ eyebrow: offer.kind + ' · ' + (offer.audience === 'pme' ? 'Solutions PME' : 'Solutions indépendants'), title: offer.title, lead: offer.summary })
+  @pageHead({ eyebrow: offer.kind + ' · ' + offersPage.audienceLabels[offer.audience], title: offer.title, lead: offer.summary })
     @slot('actions')
-      <a class="button button--primary" href="/contact?solution={{ offer.slug }}">Demandez un devis pour ce {{ offer.kind.toLowerCase() }}</a>
+      <a class="button button--primary" href="/contact?solution={{ offer.slug }}">{{ offersPage.buttonPrefix }} {{ offer.kind.toLowerCase() }}</a>
     @end
   @end
   <section class="section"><div class="wrap fiche">
-    <div class="fiche__row"><h2 class="subhead">Le problème traité</h2><p>{{ offer.problem }}</p></div>
-    <div class="fiche__row"><h2 class="subhead">Personnes et situations concernées</h2><p>{{ offer.concerned }}</p></div>
-    <div class="fiche__row"><h2 class="subhead">Ce que vous recevez</h2>@!ticks({ items: offer.receives })</div>
-    <div class="fiche__row"><h2 class="subhead">Outils et documents nécessaires</h2>@!ticks({ items: offer.tools })</div>
-    <div class="fiche__row"><h2 class="subhead">Dans le périmètre</h2>@!ticks({ items: offer.inScope })</div>
-    <div class="fiche__row"><h2 class="subhead">Relève d’une adaptation</h2>@!ticks({ items: offer.adaptation })</div>
-    <div class="fiche__row"><h2 class="subhead">Validations à votre charge</h2>@!ticks({ items: offer.validations })</div>
-    <div class="fiche__row"><h2 class="subhead">Prise en main, maintenance et suivi</h2><p>Les conditions de prise en main, de maintenance et de suivi sont précisées dans le devis, selon le périmètre retenu.</p></div>
-    <div class="fiche__row"><h2 class="subhead">Prix</h2><p><strong>Sur devis.</strong> Les abonnements, licences et consommations récurrents éventuels sont indiqués dans le devis.</p></div>
-    <div class="fiche__row"><h2 class="subhead">Réalisation associée</h2><p>Aucune réalisation n’est encore publiée pour cette offre. <a href="/realisations">Voir les réalisations</a>.</p></div>
-    <div class="fiche__row"><h2 class="subhead">Solutions concernées</h2>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.problemTitle }}</h2><p>{{ offer.problem }}</p></div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.concernedTitle }}</h2><p>{{ offer.concerned }}</p></div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.receivesTitle }}</h2>@!ticks({ items: offer.receives })</div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.toolsTitle }}</h2>@!ticks({ items: offer.tools })</div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.inScopeTitle }}</h2>@!ticks({ items: offer.inScope })</div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.adaptationTitle }}</h2>@!ticks({ items: offer.adaptation })</div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.validationsTitle }}</h2>@!ticks({ items: offer.validations })</div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.supportTitle }}</h2><p>{{ offersPage.supportText }}</p></div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.priceTitle }}</h2><p><strong>{{ offersPage.priceLead }}</strong> {{ offersPage.priceText }}</p></div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.associatedTitle }}</h2><p>{{ offersPage.associatedText }} <a href="/realisations">{{ offersPage.associatedLink }}</a>.</p></div>
+    <div class="fiche__row"><h2 class="subhead">{{ offersPage.cardsTitle }}</h2>
       <ul class="ticks">
         @each(card in cardsFor(offer))
           <li><a href="/solutions#{{ card.slug }}">{{ card.title }}</a></li>
@@ -27,6 +28,6 @@
       </ul>
     </div>
   </div></section>
-  @!quoteCta({ text: 'Cette offre correspond à votre besoin ?', params: '?solution=' + offer.slug })
-  <div class="wrap back-link"><a class="text-link" href="{{ offer.audience === 'pme' ? '/solutions-pme' : '/solutions-independants' }}">Retour aux offres</a></div>
+  @!quoteCta({ text: offersPage.ctaText, params: '?solution=' + offer.slug })
+  <div class="wrap back-link"><a class="text-link" href="{{ offer.audience === 'pme' ? '/solutions-pme' : '/solutions-independants' }}">{{ offersPage.backLink }}</a></div>
 @end

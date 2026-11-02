@@ -1,0 +1,58 @@
+# Page « Qualité & confiance » (/qualite-confiance).
+#
+# Chaque élément de « sections » devient un bloc numéroté dans l'ordre de la liste. Un bloc peut contenir :
+#   title (obligatoire), lead, ticks (liste à puces), columns (colonnes titre + texte), notice (encadré), note (remarque discrète).
+
+meta:
+  title: "Qualité & confiance"
+  description: "Cybersécurité, gouvernance, experts métiers, validation et suivi : comment IACareer encadre ses projets IA."
+
+head:
+  eyebrow: "Qualité & confiance"
+  title: "Comment les projets sont encadrés."
+  lead: "Cybersécurité, gouvernance, experts métiers, validation et suivi : ce que vous pouvez attendre d’un projet, et ce qui reste de votre responsabilité."
+
+sections:
+  - title: "Cybersécurité et confidentialité"
+    ticks:
+      - "Données utilisées et circulation de l’information."
+      - "Accès aux outils et permissions."
+      - "Confidentialité, hébergement et prestataires concernés."
+      - "Protection des connexions et des informations sensibles."
+      - "Risques propres aux usages et aux agents IA."
+      - "Gestion des anomalies et des incidents selon le projet."
+    notice: "IACareer travaille avec des partenaires en cybersécurité. Leurs noms, rôles et modalités d’intervention seront présentés ici une fois confirmés."
+  - title: "Gouvernance"
+    ticks:
+      - "Le responsable du système."
+      - "Les utilisateurs et leurs droits."
+      - "Les usages et actions autorisés."
+      - "Les situations exigeant une validation humaine."
+      - "La traçabilité et les possibilités de contrôle."
+      - "Les responsabilités de maintenance et de mise à jour."
+    notice: "Des partenaires en gouvernance existent également ; leur présentation sera ajoutée une fois confirmée."
+  - title: "Experts métiers"
+    lead: "Leur rôle : confronter les solutions aux règles, aux pratiques et aux contraintes du métier."
+    columns:
+      - title: "Par fonction"
+        text: "Commercial, ressources humaines, finance, opérations, support, direction."
+      - title: "Par secteur"
+        text: "Selon les besoins et les compétences effectivement mobilisables pour votre projet."
+    note: "Nous n’affichons pas d’expert pour une fonction ou un secteur tant que son intervention n’est pas établie."
+  - title: "Qualité des réalisations"
+    lead: "Un projet commence par un besoin défini et des résultats attendus."
+    ticks:
+      - "Des cas de vérification, dont les cas difficiles."
+      - "La prise en compte des erreurs et des exceptions."
+      - "Les retours des utilisateurs."
+      - "Une documentation et une appropriation par les équipes."
+      - "Une place précisée pour la validation humaine : nous ne promettons pas une autonomie totale dans toutes les situations."
+  - title: "Garanties et accompagnement"
+    ticks:
+      - "Périmètre et livrables convenus."
+      - "Conditions de validation de la réalisation."
+      - "Maintenance et assistance."
+      - "Propriété, licences et conditions d’utilisation."
+      - "Transmission, autonomie et possibilités de reprise."
+      - "Suivi et évolution."
+    note: "Ces points sont détaillés dans le devis de chaque projet."

@@ -1,9 +1,10 @@
+{{-- Textes : content/realisations.yml. Ici, seulement la structure. --}}
 @layouts.app({
-  title: 'Réalisations',
-  description: 'Les réalisations IACareer : emplacements réservés, projets internes et projets clients identifiés comme tels.',
+  title: realisationsPages.list.meta.title,
+  description: realisationsPages.list.meta.description,
   path: '/realisations'
 })
-  @pageHead({ eyebrow: 'Réalisations', title: 'Des projets documentés, avec leurs limites.', lead: 'Les quatre emplacements ci-dessous sont réservés. Aucune réalisation n’est encore publiée : nous ne présentons pas comme livré un projet qui ne l’est pas.' })
+  @pageHead({ eyebrow: realisationsPages.list.head.eyebrow, title: realisationsPages.list.head.title, lead: realisationsPages.list.head.lead })
   @end
   <section class="section"><div class="wrap">
     <ul class="realisations realisations--wide">
@@ -16,7 +17,7 @@
         </li>
       @end
     </ul>
-    <p class="muted note">Les projets internes porteront la mention « Projet interne IACareer » ; les projets clients et les prototypes seront identifiés comme tels, avec leur état d’avancement.</p>
+    <p class="muted note">{{ realisationsPages.list.note }}</p>
   </div></section>
   @!quoteCta()
 @end

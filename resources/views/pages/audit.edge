@@ -1,46 +1,41 @@
+{{-- Textes : content/audit.yml. Ici, seulement la structure. --}}
 @layouts.app({
-  title: 'Audit & transformation',
-  description: 'Évaluer la maturité, repérer les opportunités et organiser une transformation par l’IA, avec une méthode en cinq temps.',
+  title: pages.audit.meta.title,
+  description: pages.audit.meta.description,
   path: '/audit-transformation'
 })
-  @pageHead({ eyebrow: 'Audit & transformation', title: 'Savoir où investir, puis avancer dans le bon ordre.', lead: 'L’audit s’adresse à celles et ceux qui ont plusieurs idées, des usages dispersés ou besoin de fixer leurs priorités avant d’engager un projet.' })
+  @pageHead({ eyebrow: pages.audit.head.eyebrow, title: pages.audit.head.title, lead: pages.audit.head.lead })
     @slot('actions')
-      <a class="button button--primary" href="/contact?objet=audit">Demandez un devis</a>
+      <a class="button button--primary" href="/contact?objet=audit">{{ pages.audit.head.button }}</a>
     @end
   @end
   <section class="section"><div class="wrap">
-    @!sectionHead({ marker: '01', title: 'Deux dimensions examinées' })
+    @!sectionHead({ marker: '01', title: pages.audit.dimensions.title })
     <div class="split">
-      <article class="split__item"><h3>Maturité</h3>
-        @!ticks({ items: ['Quels usages de l’IA existent déjà ?', 'Quels outils, données et compétences sont disponibles ?', 'Quelles règles, responsabilités et contraintes encadrent ces usages ?'] })
-      </article>
-      <article class="split__item"><h3>Opportunités</h3>
-        @!ticks({ items: ['Quelles tâches posent problème ?', 'Où se trouvent les répétitions, ressaisies, oublis ou difficultés d’accès à l’information ?', 'Quels projets méritent un examen prioritaire ?'] })
-      </article>
+      @each(dimension in pages.audit.dimensions.items)
+        <article class="split__item"><h3>{{ dimension.title }}</h3>
+          @!ticks({ items: dimension.ticks })
+        </article>
+      @end
     </div>
   </div></section>
   <section class="section section--ruled"><div class="wrap">
-    @!sectionHead({ marker: '02', title: 'Ce que vous obtenez' })
-    @!ticks({ items: ['Un état des lieux des usages, outils et données.', 'Une cartographie des processus ou tâches concernés.', 'Des opportunités décrites et hiérarchisées.', 'Les conditions de faisabilité et les points de vigilance.', 'Une feuille de route adaptée à votre organisation.'] })
+    @!sectionHead({ marker: '02', title: pages.audit.deliverables.title })
+    @!ticks({ items: pages.audit.deliverables.ticks })
   </div></section>
   <section class="section"><div class="wrap">
-    @!sectionHead({ marker: '03', title: 'La démarche en cinq temps' })
-    @!stepList({ steps: [
-      ['Comprendre', 'Besoins, pratiques actuelles et objectifs.'],
-      ['Évaluer et prioriser', 'Opportunités, données, contraintes et critères de réussite.'],
-      ['Réaliser un premier projet', 'Périmètre explicite et utilisateurs identifiés.'],
-      ['Vérifier et ajuster', 'Résultats observés, erreurs, cas difficiles et retours des utilisateurs.'],
-      ['Déployer et accompagner', 'Appropriation, responsabilités, documentation et suivi.']
-    ] })
+    @!sectionHead({ marker: '03', title: pages.audit.method.title })
+    @!stepList({ steps: pages.audit.method.steps.map((step) => [step.title, step.text]) })
   </div></section>
   <section class="section section--ruled"><div class="wrap">
-    @!sectionHead({ marker: '04', title: 'Trois niveaux de profondeur', lead: 'Un audit global n’est pas nécessaire avant chaque petite réalisation.' })
+    @!sectionHead({ marker: '04', title: pages.audit.levels.title, lead: pages.audit.levels.lead })
     <div class="levels">
-      <article><h3>Le questionnaire</h3><p>Une première orientation, sans inscription, depuis <a href="/">l’accueil</a>. Elle ne remplace ni un cadrage ni un audit.</p></article>
-      <article><h3>Le cadrage</h3><p>La vérification du besoin et du périmètre d’une solution précise.</p></article>
-      <article><h3>L’audit</h3><p>Un examen plus large, qui prépare plusieurs projets ou une transformation.</p></article>
+      <article><h3>{{ pages.audit.levels.questionnaire.title }}</h3><p>{{ pages.audit.levels.questionnaire.before }} <a href="/">{{ pages.audit.levels.questionnaire.linkLabel }}</a>{{ pages.audit.levels.questionnaire.after }}</p></article>
+      @each(level in pages.audit.levels.items)
+        <article><h3>{{ level.title }}</h3><p>{{ level.text }}</p></article>
+      @end
     </div>
-    <p class="muted note">Les durées, tarifs et modalités de ces prestations sont précisés dans le devis.</p>
+    <p class="muted note">{{ pages.audit.levels.note }}</p>
   </div></section>
-  @!quoteCta({ text: 'Demandez un échange sur un audit.', params: '?objet=audit' })
+  @!quoteCta({ text: pages.audit.cta.text, params: '?objet=audit' })
 @end

@@ -1,0 +1,35 @@
+# Page « Solutions PME » (/solutions-pme).
+# La liste des huit familles vient de content/offers.yml (offres dont l'audience est "pme").
+
+meta:
+  title: "Solutions PME"
+  description: "Solutions IA pour PME : applications métier, connexions aux outils, assistants, RAG, agents et automatisation."
+
+head:
+  eyebrow: "Solutions PME"
+  title: "Relier l’IA à vos outils, à vos données et au travail de vos équipes."
+  lead: "Des solutions intégrées au fonctionnement collectif, avec un périmètre d’action et des responsabilités compréhensibles : les collaborateurs les utilisent et les contrôlent."
+  button: "Demandez un devis"
+
+contexts:
+  title: "Par fonction ou par secteur"
+  paragraph: "Commercial, support, opérations, finance, ressources humaines ou direction : les exemples varient selon la fonction. Le secteur rend les situations concrètes. Ces exemples illustrent des usages possibles, pas des réalisations déjà livrées."
+  ticks:
+    - "Industrie : retrouver des pièces et fiches techniques"
+    - "Services administratifs : suivre et contrôler des dossiers"
+    - "Formation : exploiter des documents pédagogiques"
+    - "Opérations : suivre des interventions"
+    - "Commerce : rechercher dans des fiches produits"
+    - "Immobilier : traiter des demandes de biens"
+  glossary:
+    - term: "RAG"
+      definition: "Un assistant qui cherche dans vos documents et cite ses sources pour répondre."
+    - term: "MCP / API"
+      definition: "Des moyens de connecter un assistant IA à vos logiciels, avec des droits précis."
+    - term: "Agent"
+      definition: "Un assistant capable d’accomplir des actions définies, sous votre contrôle."
+
+families:
+  title: "Huit familles de solutions"
+  note: "Chaque fiche précise le périmètre, les utilisateurs, les droits, les sources documentaires et les validations."
+  allLink: "Voir les trente solutions"

@@ -16,8 +16,9 @@ npm run typecheck
 
 - `start/routes.ts` : routes (détail dans [docs/routes.md](docs/routes.md)). `start/limiter.ts` : limite de débit.
 - `app/controllers/`, `app/services/`, `app/validators/` : fiches, formulaire de devis (VineJS), enregistrement.
-- `app/content/` : packs, familles de solutions et emplacements de réalisations.
-- `resources/views/` : vues Edge (`components/` pour les éléments réutilisés).
+- `content/*.yml` : **tous les textes éditables** (accueil, audit, indépendants, PME, qualité, solutions, réalisations, fiches d'offres). Chaque fichier commence par ses règles d'édition. En dev, le serveur se recharge à l'enregistrement ; en production, relancer le serveur. Une erreur de saisie (YAML invalide, texte vide, clé manquante) empêche le démarrage avec un message qui nomme le fichier et la clé.
+- `app/content/` : chargement et validation de ces fichiers (types, clés exigées).
+- `resources/views/` : vues Edge (`components/` pour les éléments réutilisés) : structure et ordre des sections uniquement. Non migrés vers YAML : mentions légales, formulaire de contact, titres et résumés des 30 cartes (`public/js/shared/catalog.js`, partagé avec le navigateur).
 - `public/` : CSS et JavaScript du navigateur. `public/js/shared/` contient le catalogue des 30 cartes et le moteur du questionnaire, écrits en JavaScript pour être servis tels quels ; le serveur les réutilise via `app/shared/`.
 
 ## Variables d'environnement

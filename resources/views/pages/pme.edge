@@ -1,32 +1,26 @@
+{{-- Textes : content/pme.yml (familles : content/offers.yml). Ici, seulement la structure. --}}
 @layouts.app({
-  title: 'Solutions PME',
-  description: 'Solutions IA pour PME : applications métier, connexions aux outils, assistants, RAG, agents et automatisation.',
+  title: pages.pme.meta.title,
+  description: pages.pme.meta.description,
   path: '/solutions-pme'
 })
-  @pageHead({ eyebrow: 'Solutions PME', title: 'Relier l’IA à vos outils, à vos données et au travail de vos équipes.', lead: 'Des solutions intégrées au fonctionnement collectif, avec un périmètre d’action et des responsabilités compréhensibles : les collaborateurs les utilisent et les contrôlent.' })
+  @pageHead({ eyebrow: pages.pme.head.eyebrow, title: pages.pme.head.title, lead: pages.pme.head.lead })
     @slot('actions')
-      <a class="button button--primary" href="/contact">Demandez un devis</a>
+      <a class="button button--primary" href="/contact">{{ pages.pme.head.button }}</a>
     @end
   @end
   <section class="section"><div class="wrap">
-    @!sectionHead({ marker: '·', title: 'Par fonction ou par secteur' })
-    <p>Commercial, support, opérations, finance, ressources humaines ou direction : les exemples varient selon la fonction. Le secteur rend les situations concrètes. Ces exemples illustrent des usages possibles, pas des réalisations déjà livrées.</p>
-    @!ticks({ items: [
-      'Industrie : retrouver des pièces et fiches techniques',
-      'Services administratifs : suivre et contrôler des dossiers',
-      'Formation : exploiter des documents pédagogiques',
-      'Opérations : suivre des interventions',
-      'Commerce : rechercher dans des fiches produits',
-      'Immobilier : traiter des demandes de biens'
-    ] })
+    @!sectionHead({ marker: '·', title: pages.pme.contexts.title })
+    <p>{{ pages.pme.contexts.paragraph }}</p>
+    @!ticks({ items: pages.pme.contexts.ticks })
     <dl class="glossary">
-      <dt>RAG</dt><dd>Un assistant qui cherche dans vos documents et cite ses sources pour répondre.</dd>
-      <dt>MCP / API</dt><dd>Des moyens de connecter un assistant IA à vos logiciels, avec des droits précis.</dd>
-      <dt>Agent</dt><dd>Un assistant capable d’accomplir des actions définies, sous votre contrôle.</dd>
+      @each(entry in pages.pme.contexts.glossary)
+        <dt>{{ entry.term }}</dt><dd>{{ entry.definition }}</dd>
+      @end
     </dl>
   </div></section>
   <section class="section section--ruled"><div class="wrap">
-    @!sectionHead({ marker: '·', title: 'Huit familles de solutions' })
+    @!sectionHead({ marker: '·', title: pages.pme.families.title })
     <ul class="teasers">
       @each(offer in offers.filter((item) => item.audience === 'pme'))
         <li class="teaser">
@@ -36,8 +30,8 @@
         </li>
       @end
     </ul>
-    <p class="muted note">Chaque fiche précise le périmètre, les utilisateurs, les droits, les sources documentaires et les validations.</p>
-    <a class="text-link" href="/solutions">Voir les trente solutions</a>
+    <p class="muted note">{{ pages.pme.families.note }}</p>
+    <a class="text-link" href="/solutions">{{ pages.pme.families.allLink }}</a>
   </div></section>
   @!quoteCta()
 @end

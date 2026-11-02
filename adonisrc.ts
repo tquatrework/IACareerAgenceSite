@@ -96,6 +96,10 @@ export default defineConfig({
       reloadServer: false,
     },
     {
+      pattern: 'content/**/*.yml',
+      reloadServer: true,
+    },
+    {
       pattern: 'public/**',
       reloadServer: false,
     },

@@ -1,20 +1,21 @@
+{{-- Textes : content/independants.yml (packs : content/offers.yml). Ici, seulement la structure. --}}
 @layouts.app({
-  title: 'Solutions indépendants',
-  description: 'Packs IA pour indépendants : messagerie, relation client, pilotage, communication, documents et site web.',
+  title: pages.independants.meta.title,
+  description: pages.independants.meta.description,
   path: '/solutions-independants'
 })
-  @pageHead({ eyebrow: 'Solutions indépendants', title: 'Moins de charge mentale, une activité mieux suivie.', lead: 'Boîte mail encombrée, relances oubliées, informations clients éparpillées, communication irrégulière, chiffres difficiles à suivre : chaque pack répond à une situation précise.' })
+  @pageHead({ eyebrow: pages.independants.head.eyebrow, title: pages.independants.head.title, lead: pages.independants.head.lead })
     @slot('actions')
-      <a class="button button--primary" href="/contact">Demandez un devis</a>
+      <a class="button button--primary" href="/contact">{{ pages.independants.head.button }}</a>
     @end
   @end
   <section class="section"><div class="wrap">
-    @!sectionHead({ marker: '·', title: 'Vous vous reconnaissez ?' })
-    @!ticks({ items: ['Une boîte mail qui déborde.', 'Des relances oubliées.', 'Des informations clients éparpillées.', 'Une communication irrégulière.', 'Des chiffres difficiles à suivre.', 'Un administratif envahissant.'] })
-    <p>Le développement de sites avec l’aide de l’IA fait partie de l’offre, avec l’objectif d’un coût et d’une maintenance réduits. Les conditions commerciales sont précisées dans le devis.</p>
+    @!sectionHead({ marker: '·', title: pages.independants.recognize.title })
+    @!ticks({ items: pages.independants.recognize.ticks })
+    <p>{{ pages.independants.recognize.paragraph }}</p>
   </div></section>
   <section class="section section--ruled"><div class="wrap">
-    @!sectionHead({ marker: '·', title: 'Six packs, combinables' })
+    @!sectionHead({ marker: '·', title: pages.independants.packs.title })
     <ul class="teasers">
       @each(offer in offers.filter((item) => item.audience === 'independant'))
         <li class="teaser">
@@ -24,8 +25,8 @@
         </li>
       @end
     </ul>
-    <p class="muted note">Chaque pack répond à un besoin délimité. Ils peuvent être combinés ; ils ne forment pas un forfait unique imposant tous les services.</p>
-    <a class="text-link" href="/solutions">Voir les trente solutions</a>
+    <p class="muted note">{{ pages.independants.packs.note }}</p>
+    <a class="text-link" href="/solutions">{{ pages.independants.packs.allLink }}</a>
   </div></section>
   @!quoteCta()
 @end

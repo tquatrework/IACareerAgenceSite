@@ -1,9 +1,10 @@
+{{-- Textes de la page : content/solutions.yml. Titres et résumés des cartes : public/js/shared/catalog.js. --}}
 @layouts.app({
-  title: 'Toutes les solutions',
-  description: 'Le catalogue des trente types de solutions IA proposés par IACareer pour les indépendants et les PME.',
+  title: pages.solutions.meta.title,
+  description: pages.solutions.meta.description,
   path: '/solutions'
 })
-  @pageHead({ eyebrow: 'Toutes les solutions', title: 'Trente types de solutions, à combiner.', lead: 'Ces cartes représentent des types de solutions, pas trente packs indépendants : certaines sont des briques d’un même projet. Un traitement de mails peut alimenter un CRM et un tableau de bord ; un chatbot peut s’appuyer sur un RAG.' })
+  @pageHead({ eyebrow: pages.solutions.head.eyebrow, title: pages.solutions.head.title, lead: pages.solutions.head.lead })
   @end
   <section class="section"><div class="wrap">
     @each((label, key) in families)
@@ -17,8 +18,8 @@
                 <p class="eyebrow">{{ label }}</p>
                 <h3>{{ card.title }}</h3>
                 <p>{{ card.summary }}</p>
-                <p class="catalog-entry__links"><a href="{{ cardHref(card) }}">Voir la présentation détaillée</a>
-                  <a href="/contact?solution={{ card.slug }}">Demander un devis pour cette solution</a></p>
+                <p class="catalog-entry__links"><a href="{{ cardHref(card) }}">{{ pages.solutions.cardLinks.details }}</a>
+                  <a href="/contact?solution={{ card.slug }}">{{ pages.solutions.cardLinks.quote }}</a></p>
               </div>
             </li>
           @end
@@ -26,10 +27,9 @@
       </section>
     @end
     <dl class="glossary">
-      <dt>SEO / GEO</dt><dd>Être trouvé dans les moteurs de recherche (SEO) et cité par les moteurs d’IA (GEO).</dd>
-      <dt>CRM</dt><dd>Outil de suivi des clients et des prospects.</dd>
-      <dt>RAG</dt><dd>Réponses élaborées à partir de vos documents, avec les sources.</dd>
-      <dt>MCP / API</dt><dd>Moyens de connecter des assistants IA à vos logiciels.</dd>
+      @each(entry in pages.solutions.glossary)
+        <dt>{{ entry.term }}</dt><dd>{{ entry.definition }}</dd>
+      @end
     </dl>
   </div></section>
   @!quoteCta()

@@ -1,0 +1,25 @@
+# Page « Toutes les solutions » (/solutions).
+# Les titres et résumés des trente cartes sont dans public/js/shared/catalog.js (partagé avec le questionnaire).
+
+meta:
+  title: "Toutes les solutions"
+  description: "Le catalogue des trente types de solutions IA proposés par IACareer pour les indépendants et les PME."
+
+head:
+  eyebrow: "Toutes les solutions"
+  title: "Trente types de solutions, à combiner."
+  lead: "Ces cartes représentent des types de solutions, pas trente packs indépendants : certaines sont des briques d’un même projet. Un traitement de mails peut alimenter un CRM et un tableau de bord ; un chatbot peut s’appuyer sur un RAG."
+
+cardLinks:
+  details: "Voir la présentation détaillée"
+  quote: "Demander un devis pour cette solution"
+
+glossary:
+  - term: "SEO / GEO"
+    definition: "Être trouvé dans les moteurs de recherche (SEO) et cité par les moteurs d’IA (GEO)."
+  - term: "CRM"
+    definition: "Outil de suivi des clients et des prospects."
+  - term: "RAG"
+    definition: "Réponses élaborées à partir de vos documents, avec les sources."
+  - term: "MCP / API"
+    definition: "Moyens de connecter des assistants IA à vos logiciels."
