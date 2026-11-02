@@ -2,9 +2,10 @@ import { FAMILIES, cardHref, findCard } from '/js/shared/catalog.js'
 import { QUESTIONS, emptyAnswers, isAnswerValid, toggleOption, computeResult, summarizeAnswers } from '/js/shared/quiz.js'
 
 const STORAGE_KEY = 'iacareer.quizSummary'
-const SLOT_COUNT = 12
+const CARD_COUNT = 30
 // Sélection de départ variée : chaque famille de solutions est représentée.
-const DEFAULT_SLOTS = [3, 6, 16, 1, 9, 24, 13, 17, 21, 4, 23, 30]
+const COMPACT_SLOTS = [3, 6, 16, 1, 9, 24, 13, 17, 21, 4, 23, 30]
+const ALL_SLOTS = Array.from({ length: CARD_COUNT }, (_, index) => index + 1)
 
 const ICON_PATHS = {
   presence: '<rect x="3" y="4" width="18" height="14" rx="1.5"/><path d="M3 8h18M7 21h10M12 18v3"/>',
@@ -20,6 +21,7 @@ const ICON_PATHS = {
 const quizRoot = document.querySelector('[data-quiz]')
 const mosaicRoot = document.querySelector('[data-mosaic]')
 const statusRoot = document.getElementById('mosaic-status')
+let toggleButton = null
 
 function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character])
@@ -40,28 +42,37 @@ function saveSummary(text) {
 
 // ---------- Mosaïque de cartes ----------
 
-const slots = [...DEFAULT_SLOTS].slice(0, SLOT_COUNT)
+const slots = [...COMPACT_SLOTS]
+let isShowingAll = false
 const revealed = new Map()
 
-function cardMarkup(card, reveal) {
+const FLIP_DURATION_MS = 700
+
+// Le dos est identique pour toutes les cartes (deux motifs en alternance) : il ne dit rien du contenu.
+function backMarkup(variant) {
+  return `<div class="flip__face flip__face--back flip__face--back-${variant}">
+      <span class="cardback__frame" aria-hidden="true"></span>
+      <span class="cardback__medallion" aria-hidden="true">
+        <span class="cardback__suit">${variant === 'a' ? '◆' : '✦'}</span>
+        <span class="cardback__monogram">IA</span>
+        <span class="cardback__suit">${variant === 'a' ? '◆' : '✦'}</span>
+      </span>
+      <p class="cardback__name">IACareer</p>
+      <span class="visually-hidden">Carte face cachée</span>
+    </div>`
+}
+
+// Le contenu n'est injecté dans la page qu'au moment de la révélation.
+function frontMarkup(card, reveal) {
   const number = String(card.id).padStart(2, '0')
-  const reason = reveal?.reasons?.length
+  const reason = reveal.reasons?.length
     ? `<p class="flip__reason">Vous avez indiqué : ${escapeHtml(reveal.reasons.slice(0, 2).join(' ; '))}</p>`
     : ''
-  return `<div class="flip__inner">
-    <div class="flip__face flip__face--back">
-      ${icon(card.family)}
-      <p class="flip__family">${escapeHtml(FAMILIES[card.family])}</p>
-      <p class="flip__state">Carte face cachée</p>
-    </div>
-    <div class="flip__face flip__face--front">
-      <p class="flip__num">${number} · ${escapeHtml(FAMILIES[card.family])}</p>
+  return `<p class="flip__num">${number} · ${escapeHtml(FAMILIES[card.family])}</p>
       <h3 class="flip__title">${icon(card.family)}<span>${escapeHtml(card.title)}</span></h3>
       <p class="flip__summary">${escapeHtml(card.summary)}</p>
       ${reason}
-      <a class="flip__link" href="${cardHref(card)}">Voir la présentation<span class="visually-hidden"> : ${escapeHtml(card.title)}</span></a>
-    </div>
-  </div>`
+      <a class="flip__link" href="${cardHref(card)}">Voir la présentation<span class="visually-hidden"> : ${escapeHtml(card.title)}</span></a>`
 }
 
 function setFaces(item, isRevealed) {
@@ -74,28 +85,60 @@ function setFaces(item, isRevealed) {
 
 function paintSlot(index) {
   const item = mosaicRoot.children[index]
+  const flip = item.querySelector('.flip')
+  const front = flip.querySelector('.flip__face--front')
   const card = findCard(slots[index])
   const reveal = revealed.get(card.id)
-  if (item.dataset.cardId !== String(card.id) || item.dataset.reasons !== (reveal?.reasons ?? []).join('|')) {
-    item.dataset.cardId = String(card.id)
-    item.dataset.reasons = (reveal?.reasons ?? []).join('|')
-    item.querySelector('.flip').innerHTML = cardMarkup(card, reveal)
+  const signature = reveal ? `${card.id}:${(reveal.reasons ?? []).join('|')}` : ''
+  flip.setAttribute('data-card', reveal ? String(card.id) : '')
+  if (signature === item.dataset.signature) return
+  item.dataset.signature = signature
+  clearTimeout(Number(item.dataset.clearTimer))
+  if (reveal) {
+    front.innerHTML = frontMarkup(card, reveal)
+    // Une frame d'écart pour que la rotation parte bien du dos.
+    requestAnimationFrame(() => setFaces(flip, true))
+  } else {
+    setFaces(flip, false)
+    item.dataset.clearTimer = String(setTimeout(() => { front.innerHTML = '' }, FLIP_DURATION_MS))
   }
-  setFaces(item.querySelector('.flip'), Boolean(reveal))
-  item.querySelector('.flip').setAttribute('data-card', String(card.id))
 }
 
 function buildMosaic() {
-  mosaicRoot.innerHTML = slots.map(() => '<li class="mosaic__slot"><div class="flip"></div></li>').join('')
-  slots.forEach((_, index) => paintSlot(index))
+  mosaicRoot.innerHTML = slots.map((_, index) => `<li class="mosaic__slot"><div class="flip">
+    <div class="flip__inner">
+    ${backMarkup(index % 2 === 0 ? 'a' : 'b')}
+    <div class="flip__face flip__face--front"></div>
+    </div>
+  </div></li>`).join('')
+  slots.forEach((_, index) => {
+    setFaces(mosaicRoot.children[index].querySelector('.flip'), false)
+    mosaicRoot.children[index].style.setProperty('--slot-delay', `${(index % 6) * 0.9}s`)
+  })
   updateStatus()
+}
+
+function updateToggle() {
+  if (!toggleButton) return
+  toggleButton.setAttribute('aria-expanded', String(isShowingAll))
+  toggleButton.textContent = isShowingAll ? 'Afficher moins de cartes' : `Afficher toutes les cartes (${CARD_COUNT})`
+}
+
+function setShowAll(shouldShowAll) {
+  isShowingAll = shouldShowAll
+  slots.splice(0, slots.length, ...(isShowingAll ? ALL_SLOTS : COMPACT_SLOTS))
+  mosaicRoot.classList.toggle('mosaic--all', isShowingAll)
+  const currentReveals = [...revealed.values()]
+  buildMosaic()
+  applyReveal(currentReveals)
+  updateToggle()
 }
 
 function updateStatus() {
   if (!statusRoot) return
   statusRoot.textContent = revealed.size === 0
-    ? `${SLOT_COUNT} cartes affichées, toutes face cachée.`
-    : `${revealed.size} carte${revealed.size > 1 ? 's' : ''} révélée${revealed.size > 1 ? 's' : ''} sur ${SLOT_COUNT} affichées.`
+    ? `${slots.length} cartes affichées, toutes face cachée.`
+    : `${revealed.size} carte${revealed.size > 1 ? 's' : ''} révélée${revealed.size > 1 ? 's' : ''} sur ${slots.length} affichées.`
 }
 
 function applyReveal(cards) {
@@ -257,14 +300,20 @@ function restart() {
   answers = emptyAnswers()
   stepIndex = 0
   saveSummary('')
-  slots.splice(0, slots.length, ...DEFAULT_SLOTS)
+  setShowAll(false)
   applyReveal([])
-  buildMosaic()
   renderQuestion()
   focusLegend()
 }
 
 if (quizRoot && mosaicRoot) {
+  toggleButton = document.createElement('button')
+  toggleButton.type = 'button'
+  toggleButton.className = 'mosaic-toggle'
+  toggleButton.setAttribute('aria-controls', mosaicRoot.id)
+  toggleButton.addEventListener('click', () => setShowAll(!isShowingAll))
+  mosaicRoot.insertAdjacentElement('afterend', toggleButton)
   buildMosaic()
+  updateToggle()
   renderQuestion()
 }
