@@ -52,15 +52,18 @@ const GLOBAL_KEY = '*global*'
 // Une clé encore active n'est jamais évincée et les clés déjà connues restent évaluées normalement.
 export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimit = limit * 40, overflowLimit = limit * 4, now = () => Date.now() }) {
   const hits = new Map()
-  const recentHits = (key, current) => (hits.get(key) ?? []).filter((time) => current - time < windowMs)
+  // Compteurs internes tenus à part pour ne pas compter dans maxKeys.
+  const internal = new Map()
+  const tableFor = (key) => (key === OVERFLOW_KEY || key === GLOBAL_KEY ? internal : hits)
+  const recentHits = (key, current) => (tableFor(key).get(key) ?? []).filter((time) => current - time < windowMs)
   const consume = (key, max, current) => {
     const recent = recentHits(key, current)
     if (recent.length >= max) {
-      hits.set(key, recent)
+      tableFor(key).set(key, recent)
       return false
     }
     recent.push(current)
-    hits.set(key, recent)
+    tableFor(key).set(key, recent)
     return true
   }
   return function isAllowed(key) {
