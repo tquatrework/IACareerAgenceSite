@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  @each(path in ['', '/audit-transformation', '/solutions-independants', '/solutions-pme', '/solutions', '/qualite-confiance', '/realisations', '/contact', '/mentions-legales'])
+  <url><loc>{{ site.url }}{{ path }}</loc></url>
+  @end
+  @each(offer in offers)
+  <url><loc>{{ site.url }}/solutions/{{ offer.slug }}</loc></url>
+  @end
+</urlset>

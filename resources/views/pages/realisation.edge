@@ -1,0 +1,17 @@
+@layouts.app({
+  title: realisation.title,
+  description: realisation.title + ' : emplacement de réalisation en préparation.',
+  path: '/realisations/' + realisation.slug,
+  noindex: true
+})
+  @pageHead({ eyebrow: realisation.nature, title: realisation.title, lead: realisation.status + '. Ce projet n’est pas présenté comme livré.' })
+    @slot('actions')
+      <a class="button button--primary" href="/contact?objet=solution">Demander une réalisation comparable</a>
+    @end
+  @end
+  <section class="section"><div class="wrap">
+    @!sectionHead({ title: 'Ce que contiendra la fiche' })
+    @!ticks({ items: ficheSections })
+    <a class="text-link" href="/realisations">Toutes les réalisations</a>
+  </div></section>
+@end

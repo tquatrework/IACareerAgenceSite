@@ -1,0 +1,14 @@
+<section class="page-head">
+  <div class="wrap">
+    @if($props.eyebrow)
+      <p class="eyebrow">{{ $props.eyebrow }}</p>
+    @end
+    <h1 class="display">{{ $props.title }}</h1>
+    @if($props.lead)
+      <p class="lead">{{ $props.lead }}</p>
+    @end
+    @if($slots.actions)
+      <div class="actions">{{{ await $slots.actions() }}}</div>
+    @end
+  </div>
+</section>

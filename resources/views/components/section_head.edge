@@ -1,0 +1,9 @@
+<header class="section-head">
+  @if($props.marker)
+    <p class="eyebrow"><span class="marker">{{ $props.marker }}</span></p>
+  @end
+  <h2 class="headline" {{{ $props.id ? 'id="' + $props.id + '"' : '' }}}>{{ $props.title }}</h2>
+  @if($props.lead)
+    <p class="lead">{{ $props.lead }}</p>
+  @end
+</header>

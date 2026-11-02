@@ -1,0 +1,25 @@
+@layouts.app({
+  title: 'Mentions légales et confidentialité',
+  description: 'Mentions légales et politique de confidentialité du site agence.iacareer.fr.',
+  path: '/mentions-legales'
+})
+  @pageHead({ eyebrow: 'Informations légales', title: 'Mentions légales et confidentialité' })
+  @end
+  <section class="section"><div class="wrap prose">
+    <h2 class="subhead">Éditeur du site</h2>
+    <p>Le site agence.iacareer.fr est édité par <strong>VisioScience SASU</strong>, sous la marque IACareer.</p>
+    <p class="notice">À compléter par l’éditeur : forme et capital, adresse du siège, numéro d’immatriculation, numéro de TVA, directeur de la publication.</p>
+    <p>Contact : <a href="mailto:{{ site.email }}">{{ site.email }}</a> · <a href="tel:{{ site.phoneHref }}">{{ site.phone }}</a></p>
+    <h2 class="subhead">Hébergement</h2>
+    <p class="notice">À compléter : nom et coordonnées de l’hébergeur.</p>
+    <h2 class="subhead">Données personnelles</h2>
+    <h3>Questionnaire de l’accueil</h3>
+    <p>Les réponses au questionnaire restent dans votre navigateur, le temps de la session. Elles ne sont pas transmises à nos serveurs lorsque vous découvrez les résultats. Aucune inscription ni coordonnée n’est demandée.</p>
+    <h3>Formulaire de contact et de devis</h3>
+    <p>Les informations saisies (nom, adresse email, organisation et téléphone facultatifs, profil, objet, message) servent uniquement à traiter votre demande. Si vous arrivez depuis le questionnaire, un résumé de vos réponses est affiché dans le formulaire : vous pouvez le modifier ou le retirer avant l’envoi, et il n’est transmis que si vous l’envoyez.</p>
+    <p>N’y transmettez ni accès, ni mot de passe, ni document confidentiel.</p>
+    <p class="notice">À compléter : base légale, durée de conservation, destinataires et sous-traitants effectifs, modalités d’exercice de vos droits (accès, rectification, effacement) et contact dédié.</p>
+    <h3>Cookies et traceurs</h3>
+    <p>Ce site n’utilise ni cookie, ni outil de mesure d’audience tiers. Il ne charge aucune police ni ressource externe.</p>
+  </div></section>
+@end

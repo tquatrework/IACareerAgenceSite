@@ -1,0 +1,31 @@
+@layouts.app({
+  title: 'Solutions indépendants',
+  description: 'Packs IA pour indépendants : messagerie, relation client, pilotage, communication, documents et site web.',
+  path: '/solutions-independants'
+})
+  @pageHead({ eyebrow: 'Solutions indépendants', title: 'Moins de charge mentale, une activité mieux suivie.', lead: 'Boîte mail encombrée, relances oubliées, informations clients éparpillées, communication irrégulière, chiffres difficiles à suivre : chaque pack répond à une situation précise.' })
+    @slot('actions')
+      <a class="button button--primary" href="/contact">Demandez un devis</a>
+    @end
+  @end
+  <section class="section"><div class="wrap">
+    @!sectionHead({ marker: '·', title: 'Vous vous reconnaissez ?' })
+    @!ticks({ items: ['Une boîte mail qui déborde.', 'Des relances oubliées.', 'Des informations clients éparpillées.', 'Une communication irrégulière.', 'Des chiffres difficiles à suivre.', 'Un administratif envahissant.'] })
+    <p>Le développement de sites avec l’aide de l’IA fait partie de l’offre, avec l’objectif d’un coût et d’une maintenance réduits. Les conditions commerciales sont précisées dans le devis.</p>
+  </div></section>
+  <section class="section section--ruled"><div class="wrap">
+    @!sectionHead({ marker: '·', title: 'Six packs, combinables' })
+    <ul class="teasers">
+      @each(offer in offers.filter((item) => item.audience === 'independant'))
+        <li class="teaser">
+          <p class="eyebrow">{{ offer.kind }}</p>
+          <h3><a href="/solutions/{{ offer.slug }}">{{ offer.title }}</a></h3>
+          <p>{{ offer.summary }}</p>
+        </li>
+      @end
+    </ul>
+    <p class="muted note">Chaque pack répond à un besoin délimité. Ils peuvent être combinés ; ils ne forment pas un forfait unique imposant tous les services.</p>
+    <a class="text-link" href="/solutions">Voir les trente solutions</a>
+  </div></section>
+  @!quoteCta()
+@end

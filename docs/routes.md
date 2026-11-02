@@ -1,6 +1,6 @@
 # Routes
 
-Aucune route n'est authentifiée : le site est public. Les seules routes qui écrivent sont `POST /contact` et `POST /api/devis` (protégées par champ piège, limite de débit de 10 envois / heure / IP et taille de corps maximale de 32 Ko). Aucune route d'administration n'existe ; les demandes sont lues directement dans le fichier `data/demandes.jsonl`.
+Aucune route n'est authentifiée : le site est public. La protection CSRF est désactivée (formulaire anonyme, aucun cookie). Les seules routes qui écrivent sont `POST /contact` et `POST /api/devis` (protégées par champ piège, limite de 10 envois par heure et par IP via `@adonisjs/limiter`, corps limité à 32 Ko). Aucune route d'administration n'existe ; les demandes sont lues directement dans le fichier `data/demandes.jsonl`.
 
 | Méthode | Chemin | Description | Paramètres | Réponse |
 |---|---|---|---|---|
@@ -18,6 +18,6 @@ Aucune route n'est authentifiée : le site est public. Les seules routes qui éc
 | POST | `/api/devis` | Envoi du formulaire (JavaScript) | JSON (voir champs) | 200 `{ok:true}` ; 422 `{ok:false,errors}` ; 400/413/429/500 `{ok:false,message}` |
 | GET | `/mentions-legales` | Mentions légales et confidentialité | — | 200 HTML |
 | GET | `/robots.txt`, `/sitemap.xml` | Référencement | — | 200 |
-| GET | `/css/*`, `/js/*`, `/shared/*`, `/favicon.svg` | Fichiers statiques | — | 200 / 404 |
+| GET | `/css/*`, `/js/*` (dont `/js/shared/*`), `/favicon.svg` | Fichiers statiques | — | 200 / 404 |
 
 Champs du formulaire : `name`*, `email`*, `profile`* (`independant`/`equipe`/`autre`), `objet`* (`audit`/`solution`/`autre`), `message`* (≥ 10 car.), `organisation`, `phone`, `solution`, `quizSummary`, `website` (champ piège, doit rester vide).

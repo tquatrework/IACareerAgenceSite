@@ -1,0 +1,91 @@
+@let(fullTitle = $props.path === '/' ? $props.title : $props.title + ' — IACareer Agence')
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ fullTitle }}</title>
+  <meta name="description" content="{{ $props.description }}" />
+  @if($props.noindex)
+    <meta name="robots" content="noindex" />
+  @end
+  <link rel="canonical" href="{{ site.url }}{{ $props.path === '/' ? '' : $props.path }}" />
+  <meta property="og:title" content="{{ fullTitle }}" />
+  <meta property="og:description" content="{{ $props.description }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta name="theme-color" content="#FFF5E9" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/site.css" />
+  <script src="/js/nav.js" defer></script>
+  @each(src in $props.get('scripts', []))
+    <script type="module" src="{{ src }}"></script>
+  @end
+</head>
+<body class="{{ $props.get('bodyClass', '') }}">
+  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <header class="site-header">
+    <div class="wrap site-header__bar">
+      <a class="logo" href="/" aria-label="IACareer Agence — retour à l’accueil">
+        <svg class="logo__mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="3" y="3" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="18" y="3" width="11" height="11" rx="1.5" fill="var(--orange)"/>
+          <rect x="3" y="18" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <rect x="18" y="18" width="11" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+        <span class="logo__text"><strong>IACareer</strong><span>Agence IA</span></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-nav" data-nav-toggle>
+        <span class="nav-toggle__label">Menu</span>
+      </button>
+      <nav id="main-nav" class="main-nav" aria-label="Navigation principale">
+        <ul>
+          @each(item in navItems)
+            <li><a href="{{ item.href }}" {{{ $props.path === item.href ? 'aria-current="page"' : '' }}}>{{ item.label }}</a></li>
+          @end
+        </ul>
+        <a class="button button--primary main-nav__cta" href="/contact">Demandez un devis</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu" tabindex="-1">
+    {{{ await $slots.main() }}}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap site-footer__grid">
+      <div>
+        <p class="site-footer__brand">IACareer <span>Agence IA</span></p>
+        <p class="muted">Conseil et développement de solutions d’IA pour les indépendants et les PME.</p>
+        <p class="muted">
+          <a href="mailto:{{ site.email }}">{{ site.email }}</a><br />
+          <a href="tel:{{ site.phoneHref }}">{{ site.phone }}</a>
+        </p>
+      </div>
+      <nav aria-label="Rubriques">
+        <h2 class="eyebrow">Rubriques</h2>
+        <ul>
+          @each(item in navItems)
+            <li><a href="{{ item.href }}">{{ item.label }}</a></li>
+          @end
+          <li><a href="/realisations">Réalisations</a></li>
+          <li><a href="/solutions">Toutes les solutions</a></li>
+          <li><a href="/contact">Contact / devis</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Autres sites IACareer">
+        <h2 class="eyebrow">Les sites IACareer</h2>
+        <ul>
+          <li><a href="{{ site.brandUrl }}">iacareer.fr — la marque</a></li>
+          <li><a href="{{ site.trainingUrl }}">formation.iacareer.fr — la formation</a></li>
+          <li><a href="/mentions-legales">Mentions légales et confidentialité</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="wrap site-footer__legal muted">
+      <small>© {{ currentYear() }} IACareer — VisioScience SASU</small>
+    </div>
+  </footer>
+</body>
+</html>

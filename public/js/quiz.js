@@ -1,5 +1,5 @@
-import { FAMILIES, cardHref, findCard } from '/shared/catalog.js'
-import { QUESTIONS, emptyAnswers, isAnswerValid, toggleOption, computeResult, summarizeAnswers } from '/shared/quiz.js'
+import { FAMILIES, cardHref, findCard } from '/js/shared/catalog.js'
+import { QUESTIONS, emptyAnswers, isAnswerValid, toggleOption, computeResult, summarizeAnswers } from '/js/shared/quiz.js'
 
 const STORAGE_KEY = 'iacareer.quizSummary'
 const SLOT_COUNT = 12

@@ -1,0 +1,5 @@
+<ol class="steps">
+  @each((step, index) in $props.steps)
+    <li><span class="steps__num">{{ padNumber(index + 1) }}</span><h3>{{ step[0] }}</h3><p>{{ step[1] }}</p></li>
+  @end
+</ol>

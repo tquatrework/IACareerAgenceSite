@@ -1,0 +1,36 @@
+@layouts.app({
+  title: 'Qualité & confiance',
+  description: 'Cybersécurité, gouvernance, experts métiers, validation et suivi : comment IACareer encadre ses projets IA.',
+  path: '/qualite-confiance'
+})
+  @pageHead({ eyebrow: 'Qualité & confiance', title: 'Comment les projets sont encadrés.', lead: 'Cybersécurité, gouvernance, experts métiers, validation et suivi : ce que vous pouvez attendre d’un projet, et ce qui reste de votre responsabilité.' })
+  @end
+  <section class="section"><div class="wrap">
+    @!sectionHead({ marker: '01', title: 'Cybersécurité et confidentialité' })
+    @!ticks({ items: ['Données utilisées et circulation de l’information.', 'Accès aux outils et permissions.', 'Confidentialité, hébergement et prestataires concernés.', 'Protection des connexions et des informations sensibles.', 'Risques propres aux usages et aux agents IA.', 'Gestion des anomalies et des incidents selon le projet.'] })
+    <p class="notice">IACareer travaille avec des partenaires en cybersécurité. Leurs noms, rôles et modalités d’intervention seront présentés ici une fois confirmés.</p>
+  </div></section>
+  <section class="section section--ruled"><div class="wrap">
+    @!sectionHead({ marker: '02', title: 'Gouvernance' })
+    @!ticks({ items: ['Le responsable du système.', 'Les utilisateurs et leurs droits.', 'Les usages et actions autorisés.', 'Les situations exigeant une validation humaine.', 'La traçabilité et les possibilités de contrôle.', 'Les responsabilités de maintenance et de mise à jour.'] })
+    <p class="notice">Des partenaires en gouvernance existent également ; leur présentation sera ajoutée une fois confirmée.</p>
+  </div></section>
+  <section class="section"><div class="wrap">
+    @!sectionHead({ marker: '03', title: 'Experts métiers', lead: 'Leur rôle : confronter les solutions aux règles, aux pratiques et aux contraintes du métier.' })
+    <div class="split">
+      <article class="split__item"><h3>Par fonction</h3><p>Commercial, ressources humaines, finance, opérations, support, direction.</p></article>
+      <article class="split__item"><h3>Par secteur</h3><p>Selon les besoins et les compétences effectivement mobilisables pour votre projet.</p></article>
+    </div>
+    <p class="muted note">Nous n’affichons pas d’expert pour une fonction ou un secteur tant que son intervention n’est pas établie.</p>
+  </div></section>
+  <section class="section section--ruled"><div class="wrap">
+    @!sectionHead({ marker: '04', title: 'Qualité des réalisations', lead: 'Un projet commence par un besoin défini et des résultats attendus.' })
+    @!ticks({ items: ['Des cas de vérification, dont les cas difficiles.', 'La prise en compte des erreurs et des exceptions.', 'Les retours des utilisateurs.', 'Une documentation et une appropriation par les équipes.', 'Une place précisée pour la validation humaine : nous ne promettons pas une autonomie totale dans toutes les situations.'] })
+  </div></section>
+  <section class="section"><div class="wrap">
+    @!sectionHead({ marker: '05', title: 'Garanties et accompagnement' })
+    @!ticks({ items: ['Périmètre et livrables convenus.', 'Conditions de validation de la réalisation.', 'Maintenance et assistance.', 'Propriété, licences et conditions d’utilisation.', 'Transmission, autonomie et possibilités de reprise.', 'Suivi et évolution.'] })
+    <p class="muted note">Ces points sont détaillés dans le devis de chaque projet.</p>
+  </div></section>
+  @!quoteCta()
+@end

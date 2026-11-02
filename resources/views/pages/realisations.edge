@@ -1,0 +1,22 @@
+@layouts.app({
+  title: 'Réalisations',
+  description: 'Les réalisations IACareer : emplacements réservés, projets internes et projets clients identifiés comme tels.',
+  path: '/realisations'
+})
+  @pageHead({ eyebrow: 'Réalisations', title: 'Des projets documentés, avec leurs limites.', lead: 'Les quatre emplacements ci-dessous sont réservés. Aucune réalisation n’est encore publiée : nous ne présentons pas comme livré un projet qui ne l’est pas.' })
+  @end
+  <section class="section"><div class="wrap">
+    <ul class="realisations realisations--wide">
+      @each(item in realisations)
+        <li class="realisation">
+          <p class="tag">{{ item.nature }}</p>
+          <h2 class="subhead"><a href="/realisations/{{ item.slug }}">{{ item.title }}</a></h2>
+          <p class="muted">{{ item.theme }} · {{ item.status }}</p>
+          <p>{{ item.summary }}</p>
+        </li>
+      @end
+    </ul>
+    <p class="muted note">Les projets internes porteront la mention « Projet interne IACareer » ; les projets clients et les prototypes seront identifiés comme tels, avec leur état d’avancement.</p>
+  </div></section>
+  @!quoteCta()
+@end

@@ -1,0 +1,105 @@
+@layouts.app({
+  title: 'Contact / demande de devis',
+  description: 'Décrivez votre besoin et demandez un devis ou un échange sur un audit IA auprès d’IACareer.',
+  path: '/contact',
+  scripts: ['/js/contact.js']
+})
+  @pageHead({ eyebrow: 'Contact / demande de devis', title: 'Décrivez votre besoin.', lead: 'Demandez un devis pour une solution, ou sollicitez un échange sur un audit. Ce premier contact ne demande ni accès, ni document confidentiel.' })
+  @end
+  <section class="section"><div class="wrap contact-grid">
+    <div>
+      <div id="form-status" class="status" role="status" tabindex="-1">
+        @if(status === 'sent')
+          <p class="notice notice--ok"><strong>Votre demande a bien été reçue.</strong> Nous revenons vers vous à l’adresse indiquée.</p>
+        @elseif(status === 'error')
+          <p class="notice notice--error"><strong>Votre demande n’a pas pu être transmise.</strong> Votre message est conservé ci-dessous : vous pouvez le corriger ou réessayer.</p>
+        @elseif(status === 'invalid')
+          <p class="notice notice--error"><strong>Quelques informations sont à corriger.</strong> Votre saisie est conservée.</p>
+        @end
+      </div>
+      <form id="devis-form" method="post" action="/contact" novalidate {{{ status === 'sent' ? 'hidden' : '' }}}>
+        <div class="field {{ errors.name ? 'field--error' : '' }}">
+          <label for="name">Nom <span class="required">(obligatoire)</span></label>
+          <input id="name" name="name" type="text" autocomplete="name" required maxlength="120" value="{{ values.name || '' }}" {{{ errors.name ? 'aria-invalid="true" aria-describedby="name-error"' : '' }}} />
+          @if(errors.name)
+            <p class="error" id="name-error">{{ errors.name }}</p>
+          @end
+        </div>
+        <div class="field {{ errors.email ? 'field--error' : '' }}">
+          <label for="email">Adresse email <span class="required">(obligatoire)</span></label>
+          <input id="email" name="email" type="email" autocomplete="email" required maxlength="254" value="{{ values.email || '' }}" {{{ errors.email ? 'aria-invalid="true" aria-describedby="email-error"' : '' }}} />
+          @if(errors.email)
+            <p class="error" id="email-error">{{ errors.email }}</p>
+          @end
+        </div>
+        <div class="field">
+          <label for="organisation">Organisation <span class="optional">(facultatif)</span></label>
+          <input id="organisation" name="organisation" type="text" autocomplete="organization" maxlength="150" value="{{ values.organisation || '' }}" />
+        </div>
+        <div class="field {{ errors.phone ? 'field--error' : '' }}">
+          <label for="phone">Téléphone <span class="optional">(facultatif)</span></label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" value="{{ values.phone || '' }}" {{{ errors.phone ? 'aria-invalid="true" aria-describedby="phone-error"' : '' }}} />
+          @if(errors.phone)
+            <p class="error" id="phone-error">{{ errors.phone }}</p>
+          @end
+        </div>
+        <div class="field {{ errors.profile ? 'field--error' : '' }}">
+          <label for="profile">Votre profil <span class="required">(obligatoire)</span></label>
+          <select id="profile" name="profile" required {{{ errors.profile ? 'aria-invalid="true" aria-describedby="profile-error"' : '' }}}>
+            <option value="">Choisir…</option>
+            @each((label, key) in profiles)
+              <option value="{{ key }}" {{{ values.profile === key ? 'selected' : '' }}}>{{ label }}</option>
+            @end
+          </select>
+          @if(errors.profile)
+            <p class="error" id="profile-error">{{ errors.profile }}</p>
+          @end
+        </div>
+        <div class="field {{ errors.objet ? 'field--error' : '' }}">
+          <label for="objet">Objet de la demande <span class="required">(obligatoire)</span></label>
+          <select id="objet" name="objet" required {{{ errors.objet ? 'aria-invalid="true" aria-describedby="objet-error"' : '' }}}>
+            <option value="">Choisir…</option>
+            @each((label, key) in objects)
+              <option value="{{ key }}" {{{ values.objet === key ? 'selected' : '' }}}>{{ label }}</option>
+            @end
+          </select>
+          @if(errors.objet)
+            <p class="error" id="objet-error">{{ errors.objet }}</p>
+          @end
+        </div>
+        <div class="field">
+          <label for="solution">Solution ou pack concerné <span class="optional">(facultatif)</span></label>
+          <select id="solution" name="solution">
+            <option value="">Aucun / je ne sais pas encore</option>
+            @each(offer in offers)
+              <option value="{{ offer.slug }}" {{{ values.solution === offer.slug ? 'selected' : '' }}}>{{ offer.kind }} — {{ offer.title }}</option>
+            @end
+          </select>
+        </div>
+        <div class="field {{ errors.message ? 'field--error' : '' }}">
+          <label for="message">Votre message <span class="required">(obligatoire)</span></label>
+          <p class="hint" id="message-hint">Décrivez la situation et ce que vous aimeriez améliorer.</p>
+          <textarea id="message" name="message" rows="6" required maxlength="5000" aria-describedby="message-hint{{ errors.message ? ' message-error' : '' }}" {{{ errors.message ? 'aria-invalid="true"' : '' }}}>{{ values.message || '' }}</textarea>
+          @if(errors.message)
+            <p class="error" id="message-error">{{ errors.message }}</p>
+          @end
+        </div>
+        <fieldset class="quiz-context" id="quiz-context" {{{ values.quizSummary ? '' : 'hidden' }}}>
+          <legend>Résumé de votre questionnaire</legend>
+          <p class="hint" id="quizSummary-hint">Ce résumé est joint à votre demande. Vous pouvez le modifier ou le retirer avant l’envoi.</p>
+          <label class="visually-hidden" for="quizSummary">Résumé du questionnaire</label>
+          <textarea id="quizSummary" name="quizSummary" rows="6" maxlength="2000" aria-describedby="quizSummary-hint">{{ values.quizSummary || '' }}</textarea>
+          <button type="button" class="button button--ghost" data-remove-context>Retirer ce résumé</button>
+        </fieldset>
+        <div class="trap" aria-hidden="true"><label for="website">Ne pas remplir</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off" /></div>
+        <p class="hint">Les informations saisies servent uniquement à traiter votre demande. <a href="/mentions-legales">Confidentialité</a>.</p>
+        <button class="button button--primary" type="submit">Envoyer ma demande</button>
+      </form>
+    </div>
+    <aside class="contact-aside" aria-label="Coordonnées">
+      <h2 class="subhead">Coordonnées</h2>
+      <p><a href="mailto:{{ site.email }}">{{ site.email }}</a><br /><a href="tel:{{ site.phoneHref }}">{{ site.phone }}</a></p>
+      <p class="muted">IACareer — agence IA, VisioScience SASU.</p>
+    </aside>
+  </div></section>
+@end
