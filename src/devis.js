@@ -42,10 +42,17 @@ export function isSpam(input) {
   return Boolean(input && String(input.website ?? '').trim())
 }
 
-export function createRateLimiter({ limit, windowMs, now = () => Date.now() }) {
+export function createRateLimiter({ limit, windowMs, maxKeys = 10000, now = () => Date.now() }) {
   const hits = new Map()
   return function isAllowed(key) {
     const current = now()
+    // Purge des clés inactives pour borner la mémoire.
+    if (hits.size >= maxKeys) {
+      for (const [storedKey, times] of hits) {
+        if (times.every((time) => current - time >= windowMs)) hits.delete(storedKey)
+      }
+      if (hits.size >= maxKeys) return false
+    }
     const recent = (hits.get(key) ?? []).filter((time) => current - time < windowMs)
     if (recent.length >= limit) {
       hits.set(key, recent)
@@ -55,6 +62,19 @@ export function createRateLimiter({ limit, windowMs, now = () => Date.now() }) {
     hits.set(key, recent)
     return true
   }
+}
+
+// Adresse du visiteur : X-Forwarded-For n'est lu que si la connexion vient d'un proxy de confiance
+// (variable TRUSTED_PROXIES, adresses séparées par des virgules). On prend l'entrée la plus à droite
+// non fiable, la seule que le proxy a réellement observée.
+export function clientAddress(request, trustedProxies = []) {
+  const peer = request.socket.remoteAddress ?? 'unknown'
+  if (!trustedProxies.includes(peer)) return peer
+  const forwarded = String(request.headers['x-forwarded-for'] ?? '').split(',').map((item) => item.trim()).filter(Boolean)
+  for (let i = forwarded.length - 1; i >= 0; i -= 1) {
+    if (!trustedProxies.includes(forwarded[i])) return forwarded[i]
+  }
+  return peer
 }
 
 // Les demandes sont conservées dans un fichier JSON Lines ; la destination définitive reste à confirmer.

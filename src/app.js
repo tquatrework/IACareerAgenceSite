@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { homePage } from './pages/home.js'
 import { auditPage, independantsPage, pmePage, solutionsCatalogPage, offerPage, qualityPage, realisationsPage, realisationPage, legalPage } from './pages/sections.js'
 import { contactPage } from './pages/contact.js'
-import { validateDevis, isSpam, createRateLimiter, createFileStore } from './devis.js'
+import { validateDevis, isSpam, createRateLimiter, createFileStore, clientAddress } from './devis.js'
 import { SITE } from './layout.js'
 import { OFFERS } from './content/offers.js'
 import { REALISATIONS } from './content/realisations.js'
@@ -113,7 +113,8 @@ function sitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`
 }
 
-export function createApp({ storeRequest, rateLimiter } = {}) {
+export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
+  const proxies = trustedProxies ?? (process.env.TRUSTED_PROXIES ?? '').split(',').map((item) => item.trim()).filter(Boolean)
   const store = storeRequest ?? createFileStore(process.env.DEVIS_FILE ?? path.join(ROOT, 'data', 'demandes.jsonl'))
   const isAllowed = rateLimiter ?? createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 })
 
@@ -122,7 +123,7 @@ export function createApp({ storeRequest, rateLimiter } = {}) {
       if (wantsJson) return sendJson(response, status, { ok: false, errors, message: formStatus === 'error' ? 'La demande n’a pas pu être transmise.' : 'Certaines informations sont à corriger.' })
       return sendHtml(response, status, contactPage({ values, errors, status: formStatus }))
     }
-    if (!isAllowed(request.socket.remoteAddress ?? 'unknown')) {
+    if (!isAllowed(clientAddress(request, proxies))) {
       return respondError(429, {}, 'error')
     }
     let input

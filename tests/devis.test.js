@@ -68,3 +68,27 @@ test('le stockage écrit une ligne JSON par demande', async () => {
   assert.equal(JSON.parse(lines[0]).id, id)
   assert.equal(JSON.parse(lines[0]).email, valid.email)
 })
+
+import { clientAddress } from '../src/devis.js'
+
+const fakeRequest = (peer, forwarded) => ({ socket: { remoteAddress: peer }, headers: forwarded ? { 'x-forwarded-for': forwarded } : {} })
+
+test('X-Forwarded-For est ignoré hors proxy de confiance', () => {
+  assert.equal(clientAddress(fakeRequest('1.1.1.1', '9.9.9.9'), []), '1.1.1.1')
+  assert.equal(clientAddress(fakeRequest('1.1.1.1', '9.9.9.9'), ['2.2.2.2']), '1.1.1.1')
+})
+
+test('derrière un proxy de confiance, la dernière adresse non fiable est utilisée', () => {
+  assert.equal(clientAddress(fakeRequest('2.2.2.2', '6.6.6.6, 9.9.9.9'), ['2.2.2.2']), '9.9.9.9')
+  assert.equal(clientAddress(fakeRequest('2.2.2.2'), ['2.2.2.2']), '2.2.2.2')
+})
+
+test('le limiteur purge les clés expirées et refuse au-delà du plafond de clés', () => {
+  let current = 0
+  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, now: () => current })
+  assert.equal(isAllowed('a'), true)
+  assert.equal(isAllowed('b'), true)
+  assert.equal(isAllowed('c'), false)
+  current = 2000
+  assert.equal(isAllowed('c'), true)
+})
