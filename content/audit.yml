@@ -1,0 +1,68 @@
+# Page « Audit & transformation » (/audit-transformation).
+# Modifiez les textes ; ne changez pas les noms de clés. Utilisez des guillemets "..." autour des textes.
+
+meta:
+  title: "Audit & transformation"
+  description: "Évaluer la maturité, repérer les opportunités et organiser une transformation par l’IA, avec une méthode en cinq temps."
+
+head:
+  eyebrow: "Audit & transformation"
+  title: "Savoir où investir, puis avancer dans le bon ordre."
+  lead: "L’audit s’adresse à celles et ceux qui ont plusieurs idées, des usages dispersés ou besoin de fixer leurs priorités avant d’engager un projet."
+  button: "Demandez un devis"
+
+dimensions:
+  title: "Deux dimensions examinées"
+  items:
+    - title: "Maturité"
+      ticks:
+        - "Quels usages de l’IA existent déjà ?"
+        - "Quels outils, données et compétences sont disponibles ?"
+        - "Quelles règles, responsabilités et contraintes encadrent ces usages ?"
+    - title: "Opportunités"
+      ticks:
+        - "Quelles tâches posent problème ?"
+        - "Où se trouvent les répétitions, ressaisies, oublis ou difficultés d’accès à l’information ?"
+        - "Quels projets méritent un examen prioritaire ?"
+
+deliverables:
+  title: "Ce que vous obtenez"
+  ticks:
+    - "Un état des lieux des usages, outils et données."
+    - "Une cartographie des processus ou tâches concernés."
+    - "Des opportunités décrites et hiérarchisées."
+    - "Les conditions de faisabilité et les points de vigilance."
+    - "Une feuille de route adaptée à votre organisation."
+
+method:
+  title: "La démarche en cinq temps"
+  steps:
+    - title: "Comprendre"
+      text: "Besoins, pratiques actuelles et objectifs."
+    - title: "Évaluer et prioriser"
+      text: "Opportunités, données, contraintes et critères de réussite."
+    - title: "Réaliser un premier projet"
+      text: "Périmètre explicite et utilisateurs identifiés."
+    - title: "Vérifier et ajuster"
+      text: "Résultats observés, erreurs, cas difficiles et retours des utilisateurs."
+    - title: "Déployer et accompagner"
+      text: "Appropriation, responsabilités, documentation et suivi."
+
+levels:
+  title: "Trois niveaux de profondeur"
+  lead: "Un audit global n’est pas nécessaire avant chaque petite réalisation."
+  # Le premier niveau contient un lien vers l'accueil : texte avant, texte du lien, texte après.
+  questionnaire:
+    title: "Le questionnaire"
+    before: "Une première orientation, sans inscription, depuis"
+    linkLabel: "l’accueil"
+    after: ". Elle ne remplace ni un cadrage ni un audit."
+  items:
+    - title: "Le cadrage"
+      text: "La vérification du besoin et du périmètre d’une solution précise."
+    - title: "L’audit"
+      text: "Un examen plus large, qui prépare plusieurs projets ou une transformation."
+  note: "Les durées, tarifs et modalités de ces prestations sont précisés dans le devis."
+
+cta:
+  text: "Demandez un échange sur un audit."

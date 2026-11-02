@@ -14,6 +14,21 @@ function readPath(root: unknown, path: string): unknown {
   }, root)
 }
 
+/** Signale tout texte vide ou toute liste vide, où qu'ils soient : un champ laissé blanc par erreur ne doit pas passer inaperçu. */
+function assertNoBlank(node: unknown, path: string, fileName: string) {
+  if (typeof node === 'string' && node.trim() === '') {
+    throw new Error(`content/${fileName} : le texte « ${path} » est vide`)
+  }
+  if (Array.isArray(node)) {
+    if (node.length === 0) throw new Error(`content/${fileName} : la liste « ${path} » est vide`)
+    node.forEach((item, index) => assertNoBlank(item, `${path}[${index + 1}]`, fileName))
+  } else if (node !== null && typeof node === 'object') {
+    for (const [key, value] of Object.entries(node)) assertNoBlank(value, path ? `${path}.${key}` : key, fileName)
+  } else if (node === null) {
+    throw new Error(`content/${fileName} : « ${path} » n’a pas de valeur`)
+  }
+}
+
 /**
  * Lit `content/<name>.yml` et vérifie que chaque chemin demandé existe.
  * - `text` : chaîne non vide ; `list` : liste non vide (les éléments sont à vérifier via `requiredPaths`).
@@ -42,6 +57,7 @@ export function loadContent<T>(
     throw new Error(`content/${fileName} doit contenir des clés (« clé: valeur »)`)
   }
 
+  assertNoBlank(parsed, '', fileName)
   for (const path of requirements.text ?? []) {
     const value = readPath(parsed, path)
     if (typeof value !== 'string' || value.trim() === '') {

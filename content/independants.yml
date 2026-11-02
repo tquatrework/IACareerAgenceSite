@@ -1,0 +1,28 @@
+# Page « Solutions indépendants » (/solutions-independants).
+# La liste des six packs vient de content/offers.yml (offres dont l'audience est "independant").
+
+meta:
+  title: "Solutions indépendants"
+  description: "Packs IA pour indépendants : messagerie, relation client, pilotage, communication, documents et site web."
+
+head:
+  eyebrow: "Solutions indépendants"
+  title: "Moins de charge mentale, une activité mieux suivie."
+  lead: "Boîte mail encombrée, relances oubliées, informations clients éparpillées, communication irrégulière, chiffres difficiles à suivre : chaque pack répond à une situation précise."
+  button: "Demandez un devis"
+
+recognize:
+  title: "Vous vous reconnaissez ?"
+  ticks:
+    - "Une boîte mail qui déborde."
+    - "Des relances oubliées."
+    - "Des informations clients éparpillées."
+    - "Une communication irrégulière."
+    - "Des chiffres difficiles à suivre."
+    - "Un administratif envahissant."
+  paragraph: "Le développement de sites avec l’aide de l’IA fait partie de l’offre, avec l’objectif d’un coût et d’une maintenance réduits. Les conditions commerciales sont précisées dans le devis."
+
+packs:
+  title: "Six packs, combinables"
+  note: "Chaque pack répond à un besoin délimité. Ils peuvent être combinés ; ils ne forment pas un forfait unique imposant tous les services."
+  allLink: "Voir les trente solutions"
