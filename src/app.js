@@ -118,7 +118,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
   const store = storeRequest ?? createFileStore(process.env.DEVIS_FILE ?? path.join(ROOT, 'data', 'demandes.jsonl'))
   const isAllowed = rateLimiter ?? createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 })
 
-  async function handleDevis(request, response, wantsJson) {
+  async function processDevis(request, response, wantsJson, state) {
     const respondError = (status, errors, formStatus, values = {}) => {
       if (wantsJson) return sendJson(response, status, { ok: false, errors, message: formStatus === 'error' ? 'La demande n’a pas pu être transmise.' : 'Certaines informations sont à corriger.' })
       return sendHtml(response, status, contactPage({ values, errors, status: formStatus }))
@@ -126,6 +126,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
     if (!isAllowed(rateLimitKey(clientAddress(request, proxies)))) {
       return respondError(429, {}, 'error')
     }
+    state.isAdmitted = true
     let input
     try {
       input = parseBody(await readBody(request), request.headers['content-type'])
@@ -140,12 +141,22 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
     if (Object.keys(errors).length > 0) return respondError(422, errors, 'invalid', values)
     try {
       await store(values)
-      isAllowed.recordStored?.()
+      state.isStored = true
     } catch (error) {
       console.error('Enregistrement de la demande impossible :', error.message)
       return respondError(500, {}, 'error', values)
     }
     return wantsJson ? sendJson(response, 200, { ok: true }) : sendHtml(response, 200, contactPage({ status: 'sent' }))
+  }
+
+  // Une place globale est réservée à l'admission puis libérée si la demande n'est pas enregistrée.
+  async function handleDevis(request, response, wantsJson) {
+    const state = { isAdmitted: false, isStored: false }
+    try {
+      return await processDevis(request, response, wantsJson, state)
+    } finally {
+      if (state.isAdmitted) isAllowed.settle?.(state.isStored)
+    }
   }
 
   return http.createServer(async (request, response) => {

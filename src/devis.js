@@ -47,10 +47,11 @@ const OVERFLOW_KEY = '*overflow*'
 const GLOBAL_KEY = '*global*'
 
 // Limite par clé, plus deux garde-fous :
-// - plafond global (globalLimit) sur les demandes enregistrées (voir recordStored) ;
+// - plafond global (globalLimit) sur les demandes enregistrées (voir settle) ;
 // - table pleine : purge des clés expirées, puis les nouvelles clés partagent un seul seau de débordement.
 // Une clé encore active n'est jamais évincée et les clés déjà connues restent évaluées normalement.
 export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimit = limit * 40, overflowLimit = limit * 4, now = () => Date.now() }) {
+  let pending = 0
   const hits = new Map()
   // Compteurs internes tenus à part pour ne pas compter dans maxKeys.
   const internal = new Map()
@@ -68,7 +69,7 @@ export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimi
   }
   function isAllowed(key) {
     const current = now()
-    if (recentHits(GLOBAL_KEY, current).length >= globalLimit) return false
+    if (recentHits(GLOBAL_KEY, current).length + pending >= globalLimit) return false
     let effectiveKey = key
     let max = limit
     if (!hits.has(key) && hits.size >= maxKeys) {
@@ -80,11 +81,16 @@ export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimi
         max = overflowLimit
       }
     }
-    return consume(effectiveKey, max, current)
+    if (!consume(effectiveKey, max, current)) return false
+    pending += 1
+    return true
   }
-  // Le plafond global ne compte que les demandes valides effectivement enregistrées :
-  // des requêtes invalides ou bloquées ne peuvent pas l'épuiser pour les autres visiteurs.
-  isAllowed.recordStored = () => consume(GLOBAL_KEY, Infinity, now())
+  // Réservation : une demande admise occupe une place globale (pending) jusqu'à settle().
+  // Enregistrée, elle compte dans la fenêtre ; sinon (invalide, spam, erreur) la place est rendue.
+  isAllowed.settle = (isStored) => {
+    pending = Math.max(0, pending - 1)
+    if (isStored) consume(GLOBAL_KEY, Infinity, now())
+  }
   return isAllowed
 }
 
