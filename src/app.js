@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { homePage } from './pages/home.js'
 import { auditPage, independantsPage, pmePage, solutionsCatalogPage, offerPage, qualityPage, realisationsPage, realisationPage, legalPage } from './pages/sections.js'
 import { contactPage } from './pages/contact.js'
-import { validateDevis, isSpam, createRateLimiter, createFileStore, clientAddress } from './devis.js'
+import { validateDevis, isSpam, createRateLimiter, createFileStore, clientAddress, rateLimitKey } from './devis.js'
 import { SITE } from './layout.js'
 import { OFFERS } from './content/offers.js'
 import { REALISATIONS } from './content/realisations.js'
@@ -123,7 +123,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
       if (wantsJson) return sendJson(response, status, { ok: false, errors, message: formStatus === 'error' ? 'La demande n’a pas pu être transmise.' : 'Certaines informations sont à corriger.' })
       return sendHtml(response, status, contactPage({ values, errors, status: formStatus }))
     }
-    if (!isAllowed(clientAddress(request, proxies))) {
+    if (!isAllowed(rateLimitKey(clientAddress(request, proxies)))) {
       return respondError(429, {}, 'error')
     }
     let input

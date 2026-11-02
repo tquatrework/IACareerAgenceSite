@@ -43,17 +43,14 @@ export function isSpam(input) {
 }
 
 export function createRateLimiter({ limit, windowMs, maxKeys = 10000, now = () => Date.now() }) {
+  // L'ordre d'insertion de la Map sert de file : la clé la plus ancienne est évincée quand la table est pleine.
   const hits = new Map()
   return function isAllowed(key) {
     const current = now()
-    // Purge des clés inactives pour borner la mémoire.
-    if (hits.size >= maxKeys) {
-      for (const [storedKey, times] of hits) {
-        if (times.every((time) => current - time >= windowMs)) hits.delete(storedKey)
-      }
-      if (hits.size >= maxKeys) return false
-    }
     const recent = (hits.get(key) ?? []).filter((time) => current - time < windowMs)
+    const isKnown = hits.has(key)
+    if (!isKnown && hits.size >= maxKeys) hits.delete(hits.keys().next().value)
+    hits.delete(key)
     if (recent.length >= limit) {
       hits.set(key, recent)
       return false
@@ -62,6 +59,13 @@ export function createRateLimiter({ limit, windowMs, maxKeys = 10000, now = () =
     hits.set(key, recent)
     return true
   }
+}
+
+// Les adresses IPv6 d'un même /64 appartiennent à un seul abonné : elles partagent une clé.
+export function rateLimitKey(address) {
+  if (!address.includes(':') || address.includes('.')) return address
+  const groups = address.split('::')[0].split(':')
+  return `${groups.slice(0, 4).join(':')}::/64`
 }
 
 // Adresse du visiteur : X-Forwarded-For n'est lu que si la connexion vient d'un proxy de confiance

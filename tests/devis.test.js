@@ -83,12 +83,20 @@ test('derrière un proxy de confiance, la dernière adresse non fiable est utili
   assert.equal(clientAddress(fakeRequest('2.2.2.2'), ['2.2.2.2']), '2.2.2.2')
 })
 
-test('le limiteur purge les clés expirées et refuse au-delà du plafond de clés', () => {
-  let current = 0
-  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, now: () => current })
+test('table pleine : la clé la plus ancienne est évincée sans bloquer les autres', () => {
+  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, now: () => 0 })
   assert.equal(isAllowed('a'), true)
   assert.equal(isAllowed('b'), true)
-  assert.equal(isAllowed('c'), false)
-  current = 2000
   assert.equal(isAllowed('c'), true)
+  assert.equal(isAllowed('c'), false)
+  assert.equal(isAllowed('b'), false)
+})
+
+import { rateLimitKey } from '../src/devis.js'
+
+test('les adresses IPv6 d’un même /64 partagent une clé, IPv4 inchangé', () => {
+  assert.equal(rateLimitKey('2001:db8:1:2:aaaa:bbbb:cccc:dddd'), rateLimitKey('2001:db8:1:2::1'))
+  assert.notEqual(rateLimitKey('2001:db8:1:2::1'), rateLimitKey('2001:db8:1:3::1'))
+  assert.equal(rateLimitKey('203.0.113.5'), '203.0.113.5')
+  assert.equal(rateLimitKey('::ffff:203.0.113.5'), '::ffff:203.0.113.5')
 })
