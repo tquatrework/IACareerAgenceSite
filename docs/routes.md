@@ -1,6 +1,6 @@
 # Routes
 
-Aucune route n'est authentifiée : le site est public. Les seules routes qui écrivent sont `POST /contact` et `POST /api/devis` (protégées par champ piège, limite de débit de 5 envois / 10 min / IP et taille de corps maximale de 32 Ko). Aucune route d'administration n'existe ; les demandes sont lues directement dans le fichier `data/demandes.jsonl`.
+Aucune route n'est authentifiée : le site est public. Les seules routes qui écrivent sont `POST /contact` et `POST /api/devis` (protégées par champ piège, limite de débit de 10 envois / heure / IP et taille de corps maximale de 32 Ko). Aucune route d'administration n'existe ; les demandes sont lues directement dans le fichier `data/demandes.jsonl`.
 
 | Méthode | Chemin | Description | Paramètres | Réponse |
 |---|---|---|---|---|

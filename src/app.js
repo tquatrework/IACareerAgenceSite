@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { homePage } from './pages/home.js'
 import { auditPage, independantsPage, pmePage, solutionsCatalogPage, offerPage, qualityPage, realisationsPage, realisationPage, legalPage } from './pages/sections.js'
 import { contactPage } from './pages/contact.js'
-import { validateDevis, isSpam, createRateLimiter, createFileStore, clientAddress, rateLimitKey } from './devis.js'
+import { validateDevis, isSpam, createRateLimiter, createFileStore, clientAddress } from './devis.js'
 import { SITE } from './layout.js'
 import { OFFERS } from './content/offers.js'
 import { REALISATIONS } from './content/realisations.js'
@@ -124,17 +124,16 @@ function sitemap() {
 export function createApp({ storeRequest, rateLimiter, trustedProxies, bodyTimeoutMs = 5000 } = {}) {
   const proxies = trustedProxies ?? (process.env.TRUSTED_PROXIES ?? '').split(',').map((item) => item.trim()).filter(Boolean)
   const store = storeRequest ?? createFileStore(process.env.DEVIS_FILE ?? path.join(ROOT, 'data', 'demandes.jsonl'))
-  const isAllowed = rateLimiter ?? createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 })
+  const isAllowed = rateLimiter ?? createRateLimiter({ limit: 10, windowMs: 60 * 60 * 1000 })
 
-  async function processDevis(request, response, wantsJson, state) {
+  async function handleDevis(request, response, wantsJson) {
     const respondError = (status, errors, formStatus, values = {}) => {
       if (wantsJson) return sendJson(response, status, { ok: false, errors, message: formStatus === 'error' ? 'La demande n’a pas pu être transmise.' : 'Certaines informations sont à corriger.' })
       return sendHtml(response, status, contactPage({ values, errors, status: formStatus }))
     }
-    if (!isAllowed(rateLimitKey(clientAddress(request, proxies)))) {
+    if (!isAllowed(clientAddress(request, proxies))) {
       return respondError(429, {}, 'error')
     }
-    state.isAdmitted = true
     let input
     try {
       input = parseBody(await readBody(request, bodyTimeoutMs), request.headers['content-type'])
@@ -149,22 +148,11 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies, bodyTimeo
     if (Object.keys(errors).length > 0) return respondError(422, errors, 'invalid', values)
     try {
       await store(values)
-      state.isStored = true
     } catch (error) {
       console.error('Enregistrement de la demande impossible :', error.message)
       return respondError(500, {}, 'error', values)
     }
     return wantsJson ? sendJson(response, 200, { ok: true }) : sendHtml(response, 200, contactPage({ status: 'sent' }))
-  }
-
-  // Une place globale est réservée à l'admission puis libérée si la demande n'est pas enregistrée.
-  async function handleDevis(request, response, wantsJson) {
-    const state = { isAdmitted: false, isStored: false }
-    try {
-      return await processDevis(request, response, wantsJson, state)
-    } finally {
-      if (state.isAdmitted) isAllowed.settle?.(state.isStored)
-    }
   }
 
   const server = http.createServer(async (request, response) => {

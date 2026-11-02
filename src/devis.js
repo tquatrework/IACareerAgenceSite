@@ -1,7 +1,6 @@
 import { appendFile, mkdir } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
-import net from 'node:net'
 
 export const PROFILES = { independant: 'Indépendant', equipe: 'Entreprise avec équipe', autre: 'Autre' }
 export const OBJECTS = { audit: 'Audit', solution: 'Solution précise', autre: 'Autre demande' }
@@ -43,77 +42,26 @@ export function isSpam(input) {
   return Boolean(input && String(input.website ?? '').trim())
 }
 
-const OVERFLOW_KEY = '*overflow*'
-const GLOBAL_KEY = '*global*'
-
-// Limite par clé, plus deux garde-fous :
-// - plafond global (globalLimit) sur les demandes enregistrées (voir settle) ;
-// - table pleine : purge des clés expirées, puis les nouvelles clés partagent un seul seau de débordement.
-// Une clé encore active n'est jamais évincée et les clés déjà connues restent évaluées normalement.
-export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimit = limit * 40, overflowLimit = limit * 4, now = () => Date.now() }) {
-  let pending = 0
+// Au plus `limit` demandes par clé (adresse IP) sur la fenêtre `windowMs`.
+export function createRateLimiter({ limit, windowMs, now = () => Date.now() }) {
   const hits = new Map()
-  // Compteurs internes tenus à part pour ne pas compter dans maxKeys.
-  const internal = new Map()
-  const tableFor = (key) => (key === OVERFLOW_KEY || key === GLOBAL_KEY ? internal : hits)
-  const recentHits = (key, current) => (tableFor(key).get(key) ?? []).filter((time) => current - time < windowMs)
-  const consume = (key, max, current) => {
-    const recent = recentHits(key, current)
-    if (recent.length >= max) {
-      tableFor(key).set(key, recent)
-      return false
-    }
-    recent.push(current)
-    tableFor(key).set(key, recent)
-    return true
-  }
-  function isAllowed(key) {
+  return function isAllowed(key) {
     const current = now()
-    if (recentHits(GLOBAL_KEY, current).length + pending >= globalLimit) return false
-    let effectiveKey = key
-    let max = limit
-    if (!hits.has(key) && hits.size >= maxKeys) {
+    // Nettoyage des visiteurs inactifs pour que la table ne grossisse pas indéfiniment.
+    if (hits.size > 1000) {
       for (const [storedKey, times] of hits) {
         if (times.every((time) => current - time >= windowMs)) hits.delete(storedKey)
       }
-      if (hits.size >= maxKeys) {
-        effectiveKey = OVERFLOW_KEY
-        max = overflowLimit
-      }
     }
-    if (!consume(effectiveKey, max, current)) return false
-    pending += 1
+    const recent = (hits.get(key) ?? []).filter((time) => current - time < windowMs)
+    if (recent.length >= limit) {
+      hits.set(key, recent)
+      return false
+    }
+    recent.push(current)
+    hits.set(key, recent)
     return true
   }
-  // Réservation : une demande admise occupe une place globale (pending) jusqu'à settle().
-  // Enregistrée, elle compte dans la fenêtre ; sinon (invalide, spam, erreur) la place est rendue.
-  isAllowed.settle = (isStored) => {
-    pending = Math.max(0, pending - 1)
-    if (isStored) consume(GLOBAL_KEY, Infinity, now())
-  }
-  return isAllowed
-}
-
-// Clé de limitation : IPv4 telle quelle ; IPv6 normalisée sur 8 groupes puis réduite à son /64
-// (un abonné contrôle tout un /64) ; IPv4 mappée ramenée à l'IPv4 ; valeur invalide = clé unique.
-export function rateLimitKey(address) {
-  const bare = String(address).split('%')[0].toLowerCase()
-  if (net.isIPv4(bare)) return bare
-  if (!net.isIPv6(bare)) return 'invalid-address'
-  const mapped = bare.match(/^(?:0*:)*:?ffff:(\d+\.\d+\.\d+\.\d+)$/)
-  if (mapped) return mapped[1]
-  let text = bare
-  const dotted = text.match(/(\d+)\.(\d+)\.(\d+)\.(\d+)$/)
-  if (dotted) {
-    const [, a, b, c, d] = dotted.map(Number)
-    text = text.replace(dotted[0], `${((a << 8) | b).toString(16)}:${((c << 8) | d).toString(16)}`)
-  }
-  const [head, tail] = text.split('::')
-  const headGroups = head ? head.split(':') : []
-  const tailGroups = tail === undefined ? [] : tail ? tail.split(':') : []
-  const missing = tail === undefined ? 0 : 8 - headGroups.length - tailGroups.length
-  const groups = [...headGroups, ...Array(missing).fill('0'), ...tailGroups].map((group) => parseInt(group, 16).toString(16))
-  return `${groups.slice(0, 4).join(':')}::/64`
 }
 
 // Adresse du visiteur : X-Forwarded-For n'est lu que si la connexion vient d'un proxy de confiance
