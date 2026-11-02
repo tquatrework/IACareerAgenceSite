@@ -70,13 +70,21 @@ function notFoundPage() {
   })
 }
 
-async function readBody(request) {
+// Un client lent ne doit pas garder une réservation : au-delà du délai, la requête est coupée.
+async function readBody(request, timeoutMs) {
   const chunks = []
   let size = 0
-  for await (const chunk of request) {
-    size += chunk.length
-    if (size > MAX_BODY_BYTES) throw Object.assign(new Error('Corps trop volumineux'), { statusCode: 413 })
-    chunks.push(chunk)
+  const timer = setTimeout(() => request.destroy(new Error('Délai de lecture dépassé')), timeoutMs)
+  try {
+    for await (const chunk of request) {
+      size += chunk.length
+      if (size > MAX_BODY_BYTES) throw Object.assign(new Error('Corps trop volumineux'), { statusCode: 413 })
+      chunks.push(chunk)
+    }
+  } catch (error) {
+    throw error.statusCode ? error : Object.assign(error, { statusCode: 408 })
+  } finally {
+    clearTimeout(timer)
   }
   return Buffer.concat(chunks).toString('utf8')
 }
@@ -113,7 +121,7 @@ function sitemap() {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${entries}\n</urlset>\n`
 }
 
-export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
+export function createApp({ storeRequest, rateLimiter, trustedProxies, bodyTimeoutMs = 5000 } = {}) {
   const proxies = trustedProxies ?? (process.env.TRUSTED_PROXIES ?? '').split(',').map((item) => item.trim()).filter(Boolean)
   const store = storeRequest ?? createFileStore(process.env.DEVIS_FILE ?? path.join(ROOT, 'data', 'demandes.jsonl'))
   const isAllowed = rateLimiter ?? createRateLimiter({ limit: 5, windowMs: 10 * 60 * 1000 })
@@ -129,7 +137,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
     state.isAdmitted = true
     let input
     try {
-      input = parseBody(await readBody(request), request.headers['content-type'])
+      input = parseBody(await readBody(request, bodyTimeoutMs), request.headers['content-type'])
     } catch (error) {
       return respondError(error.statusCode ?? 400, {}, 'error')
     }
@@ -159,7 +167,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
     }
   }
 
-  return http.createServer(async (request, response) => {
+  const server = http.createServer(async (request, response) => {
     try {
       const url = new URL(request.url, 'http://localhost')
       const pathname = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : url.pathname
@@ -200,4 +208,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
       return response.end('Erreur interne')
     }
   })
+  server.headersTimeout = 10000
+  server.requestTimeout = 15000
+  return server
 }

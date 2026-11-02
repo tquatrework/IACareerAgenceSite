@@ -138,3 +138,23 @@ test('robots.txt et sitemap.xml existent', async () => {
   assert.match(await (await get('/robots.txt')).text(), /Sitemap/)
   assert.match(await (await get('/sitemap.xml')).text(), /agence\.iacareer\.fr\/audit-transformation/)
 })
+
+test('un client qui n’envoie jamais son corps est coupé et rend sa place globale', async () => {
+  const net = await import('node:net')
+  let settled = []
+  const limiter = Object.assign(() => true, { settle: (isStored) => settled.push(isStored) })
+  const slow = createApp({ storeRequest: async () => 'id', rateLimiter: limiter, bodyTimeoutMs: 100 })
+  await new Promise((resolve) => slow.listen(0, '127.0.0.1', resolve))
+  const original = console.error
+  console.error = () => {}
+  try {
+    const socket = net.connect(slow.address().port, '127.0.0.1')
+    socket.write('POST /api/devis HTTP/1.1\r\nHost: x\r\nContent-Type: application/json\r\nContent-Length: 500\r\n\r\n{"name":')
+    await new Promise((resolve) => socket.on('close', resolve))
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    assert.deepEqual(settled, [false])
+  } finally {
+    console.error = original
+    slow.close()
+  }
+})
