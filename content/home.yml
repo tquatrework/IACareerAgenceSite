@@ -1,0 +1,104 @@
+# Textes de la page d'accueil (https://agence.iacareer.fr/).
+#
+# Modifiez uniquement les textes (et les adresses « linkHref » si une page change d'adresse). Ne changez pas les noms des clés (à gauche des « : »).
+# - Les guillemets "..." autour des textes sont conseillés : ils évitent les erreurs avec « : » ou « # ».
+# - Pour aller à la ligne dans une liste, ajoutez un tiret « - » devant chaque élément.
+# - L'ordre des sections se règle dans resources/views/pages/home.edge.
+# - Après modification : le serveur de dev se recharge seul ; en production, relancer le serveur.
+
+meta:
+  title: "IACareer Agence — Conseil et solutions IA pour indépendants et PME"
+  description: "Audit, conseil et développement de solutions d’IA pour les indépendants et les PME : analyse, réalisation et appropriation par les utilisateurs."
+
+# --- Questionnaire (haut de page) ---
+hero:
+  eyebrow: "IACareer · Agence IA"
+  title: "Qu’est-ce que l’IA pourrait simplifier dans votre entreprise ?"
+  lead: "Quelques questions pour faire apparaître des solutions adaptées à vos besoins et à votre organisation."
+  noscript: "Le questionnaire demande JavaScript. Vous pouvez parcourir l’offre directement."
+  skipLink: "Voir toutes les solutions"
+
+# --- Réalisations ---
+realisations:
+  title: "Réalisations"
+  lead: "Quatre emplacements pour présenter des projets documentés. Aucun projet n’est présenté comme livré tant que sa fiche n’existe pas."
+  allLink: "Toutes les réalisations"
+
+# --- Qualité et garanties ---
+quality:
+  title: "Qualité et garanties"
+  link: "Qualité & confiance"
+  points:
+    - title: "Cybersécurité et confidentialité"
+      text: "Quelles données circulent, qui y accède, avec quelles permissions."
+    - title: "Gouvernance et responsabilités"
+      text: "Un responsable identifié, des actions autorisées, une validation humaine quand il le faut."
+    - title: "Experts métiers"
+      text: "Les solutions confrontées aux règles et aux pratiques de la fonction ou du secteur."
+    - title: "Vérifications et suivi"
+      text: "Cas de test, documentation, transmission et suivi après la livraison."
+
+# --- Bandeau blanc ---
+quote:
+  text: "« En matière d’IA, seul le premier pas coûte, le deuxième a déjà été remboursé… »"
+  button: "Demandez un devis"
+
+# --- Méthode ---
+method:
+  title: "Une méthode, de la compréhension à l’appropriation"
+  steps:
+    - title: "Comprendre"
+      text: "Le besoin, les pratiques actuelles, les objectifs."
+    - title: "Auditer ou cadrer"
+      text: "Un audit pour plusieurs projets, un cadrage pour une solution précise."
+    - title: "Réaliser"
+      text: "Un périmètre explicite, des utilisateurs identifiés."
+    - title: "Valider"
+      text: "Cas réels, erreurs, retours des utilisateurs."
+    - title: "Accompagner"
+      text: "Prise en main, documentation et suivi."
+  deliverablesLabel: "Selon la mission, vous recevez :"
+  deliverables: "un état des lieux, des priorités, une feuille de route, une solution utilisable, une documentation et une prise en main."
+  link: "Voir la démarche en détail"
+
+# --- Publics ---
+publics:
+  title: "Deux publics, deux façons d’en tirer parti"
+  items:
+    - title: "Indépendants"
+      text: "Moins de charge mentale : organisation, relation client, communication, gestion et pilotage."
+      ticks:
+        - "Mails triés et réponses préparées"
+        - "Relances et échéances suivies"
+        - "Un tableau de bord lisible de l’activité"
+      linkLabel: "Solutions indépendants"
+      linkHref: "/solutions-independants"
+    - title: "PME"
+      text: "Relier l’IA aux applications métier, aux données et au travail des équipes."
+      ticks:
+        - "Applications métier et outils connectés"
+        - "Assistant qui répond à partir de vos documents"
+        - "Un agent partagé par l’équipe"
+      linkLabel: "Solutions PME"
+      linkHref: "/solutions-pme"
+
+# --- Deux façons d'avancer ---
+paths:
+  title: "Deux façons d’avancer"
+  note: "Un audit global n’est pas le préalable obligé de chaque petite réalisation."
+  items:
+    - title: "Un besoin précis à résoudre"
+      text: "Un projet ou un pack avec un cadrage adapté : vous savez ce qui vous gêne, nous définissons ensemble un périmètre clair."
+      linkLabel: "Parcourir les solutions"
+      linkHref: "/solutions"
+    - title: "Une transformation à organiser"
+      text: "Un audit initial, des priorités et une démarche d’accompagnement quand les idées et les usages sont dispersés."
+      linkLabel: "Découvrir l’audit"
+      linkHref: "/audit-transformation"
+
+# --- Invitation finale ---
+invitation:
+  title: "Décrivez votre besoin et demandez un devis."
+  button: "Demandez un devis"
+  trainingText: "Pour faire progresser vos compétences en complément des réalisations, découvrez"
+  trainingLinkLabel: "formation.iacareer.fr"

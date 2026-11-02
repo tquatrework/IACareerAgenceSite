@@ -145,3 +145,17 @@ test.group('Demande de devis', (group) => {
     ;(await client.post('/api/devis').json(validBody)).assertStatus(429)
   })
 })
+
+test.group('Page d’accueil pilotée par content/home.yml', () => {
+  test('affiche les textes du YAML dans l’ordre voulu', async ({ client, assert }) => {
+    const { loadHomeContent } = await import('#content/home')
+    const home = loadHomeContent()
+    const html = (await client.get('/')).text()
+    const positions = [
+      home.hero.title, home.realisations.title, home.quality.title, home.quote.text,
+      home.method.title, home.publics.title, home.paths.title, home.invitation.title,
+    ].map((text) => html.indexOf(text.replace(/’/g, '&#x2019;')) >= 0 ? html.indexOf(text.replace(/’/g, '&#x2019;')) : html.indexOf(text))
+    for (const position of positions) assert.isAbove(position, -1)
+    assert.deepEqual([...positions].sort((a, b) => a - b), positions)
+  })
+})

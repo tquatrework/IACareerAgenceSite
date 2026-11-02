@@ -8,6 +8,7 @@ import edge from 'edge.js'
 import { CARDS, FAMILIES, cardHref } from '#shared/index'
 import { OFFERS } from '#content/offers'
 import { REALISATIONS, FICHE_SECTIONS } from '#content/realisations'
+import { loadHomeContent } from '#content/home'
 
 edge.global('site', {
   name: 'IACareer',
@@ -29,6 +30,7 @@ edge.global('families', FAMILIES)
 edge.global('offers', OFFERS)
 edge.global('realisations', REALISATIONS)
 edge.global('ficheSections', FICHE_SECTIONS)
+edge.global('home', loadHomeContent())
 edge.global('cardHref', cardHref)
 edge.global('padNumber', (value: number) => String(value).padStart(2, '0'))
 edge.global('cardsFor', (offer: { cards: number[] }) =>
