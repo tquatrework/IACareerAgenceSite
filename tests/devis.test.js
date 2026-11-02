@@ -83,13 +83,29 @@ test('derrière un proxy de confiance, la dernière adresse non fiable est utili
   assert.equal(clientAddress(fakeRequest('2.2.2.2'), ['2.2.2.2']), '2.2.2.2')
 })
 
-test('table pleine : la clé la plus ancienne est évincée sans bloquer les autres', () => {
-  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, now: () => 0 })
+test('table pleine : clés actives conservées, nouvelles clés regroupées dans un seau de débordement', () => {
+  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, overflowLimit: 1, globalLimit: 100, now: () => 0 })
   assert.equal(isAllowed('a'), true)
   assert.equal(isAllowed('b'), true)
   assert.equal(isAllowed('c'), true)
-  assert.equal(isAllowed('c'), false)
+  assert.equal(isAllowed('d'), false)
+  assert.equal(isAllowed('a'), false)
   assert.equal(isAllowed('b'), false)
+})
+
+test('table pleine : les clés expirées sont purgées avant tout débordement', () => {
+  let current = 0
+  const isAllowed = createRateLimiter({ limit: 1, windowMs: 1000, maxKeys: 2, overflowLimit: 1, globalLimit: 100, now: () => current })
+  isAllowed('a')
+  isAllowed('b')
+  current = 2000
+  assert.equal(isAllowed('c'), true)
+  assert.equal(isAllowed('d'), true)
+})
+
+test('le plafond global borne le total des envois', () => {
+  const isAllowed = createRateLimiter({ limit: 5, windowMs: 1000, globalLimit: 3, now: () => 0 })
+  assert.deepEqual(['a', 'b', 'c', 'd'].map(isAllowed), [true, true, true, false])
 })
 
 import { rateLimitKey } from '../src/devis.js'
@@ -98,5 +114,8 @@ test('les adresses IPv6 d’un même /64 partagent une clé, IPv4 inchangé', ()
   assert.equal(rateLimitKey('2001:db8:1:2:aaaa:bbbb:cccc:dddd'), rateLimitKey('2001:db8:1:2::1'))
   assert.notEqual(rateLimitKey('2001:db8:1:2::1'), rateLimitKey('2001:db8:1:3::1'))
   assert.equal(rateLimitKey('203.0.113.5'), '203.0.113.5')
-  assert.equal(rateLimitKey('::ffff:203.0.113.5'), '::ffff:203.0.113.5')
+  assert.equal(rateLimitKey('::ffff:203.0.113.5'), '203.0.113.5')
+  assert.equal(rateLimitKey('2001:0DB8:0001:0002::1'), rateLimitKey('2001:db8:1:2:0:0:0:1'))
+  assert.equal(rateLimitKey('2001:db8::1'), '2001:db8:0:0::/64')
+  assert.equal(rateLimitKey('n’importe quoi'), 'invalid-address')
 })
