@@ -140,6 +140,7 @@ export function createApp({ storeRequest, rateLimiter, trustedProxies } = {}) {
     if (Object.keys(errors).length > 0) return respondError(422, errors, 'invalid', values)
     try {
       await store(values)
+      isAllowed.recordStored?.()
     } catch (error) {
       console.error('Enregistrement de la demande impossible :', error.message)
       return respondError(500, {}, 'error', values)

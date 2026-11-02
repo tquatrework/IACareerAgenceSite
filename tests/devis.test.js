@@ -103,9 +103,14 @@ test('table pleine : les clés expirées sont purgées avant tout débordement',
   assert.equal(isAllowed('d'), true)
 })
 
-test('le plafond global borne le total des envois', () => {
-  const isAllowed = createRateLimiter({ limit: 5, windowMs: 1000, globalLimit: 3, now: () => 0 })
-  assert.deepEqual(['a', 'b', 'c', 'd'].map(isAllowed), [true, true, true, false])
+test('le plafond global ne compte que les demandes enregistrées', () => {
+  const isAllowed = createRateLimiter({ limit: 5, windowMs: 1000, globalLimit: 2, now: () => 0 })
+  // Des requêtes refusées ou invalides n'entament pas le plafond global.
+  for (const key of ['a', 'b', 'c', 'd']) assert.equal(isAllowed(key), true)
+  isAllowed.recordStored()
+  assert.equal(isAllowed('e'), true)
+  isAllowed.recordStored()
+  assert.equal(isAllowed('f'), false)
 })
 
 import { rateLimitKey } from '../src/devis.js'

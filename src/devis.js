@@ -47,7 +47,7 @@ const OVERFLOW_KEY = '*overflow*'
 const GLOBAL_KEY = '*global*'
 
 // Limite par clé, plus deux garde-fous :
-// - plafond global (globalLimit) qui borne le total des écritures sur la fenêtre ;
+// - plafond global (globalLimit) sur les demandes enregistrées (voir recordStored) ;
 // - table pleine : purge des clés expirées, puis les nouvelles clés partagent un seul seau de débordement.
 // Une clé encore active n'est jamais évincée et les clés déjà connues restent évaluées normalement.
 export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimit = limit * 40, overflowLimit = limit * 4, now = () => Date.now() }) {
@@ -66,7 +66,7 @@ export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimi
     tableFor(key).set(key, recent)
     return true
   }
-  return function isAllowed(key) {
+  function isAllowed(key) {
     const current = now()
     if (recentHits(GLOBAL_KEY, current).length >= globalLimit) return false
     let effectiveKey = key
@@ -80,10 +80,12 @@ export function createRateLimiter({ limit, windowMs, maxKeys = 10000, globalLimi
         max = overflowLimit
       }
     }
-    if (!consume(effectiveKey, max, current)) return false
-    consume(GLOBAL_KEY, Infinity, current)
-    return true
+    return consume(effectiveKey, max, current)
   }
+  // Le plafond global ne compte que les demandes valides effectivement enregistrées :
+  // des requêtes invalides ou bloquées ne peuvent pas l'épuiser pour les autres visiteurs.
+  isAllowed.recordStored = () => consume(GLOBAL_KEY, Infinity, now())
+  return isAllowed
 }
 
 // Clé de limitation : IPv4 telle quelle ; IPv6 normalisée sur 8 groupes puis réduite à son /64
